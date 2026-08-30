@@ -3,160 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Local Video Editor</title>
+    <title>Pro Video Editor</title>
     <style>
         :root {
-            --bg: #1a1a1f;
-            --panel: #232329;
-            --panel-light: #2d2d36;
-            --border: #3a3a45;
-            --text: #e0e0e0;
-            --text-dim: #9a9aa5;
+            --bg-primary: #1e1e24;
+            --bg-secondary: #25252d;
+            --bg-tertiary: #2d2d36;
+            --bg-hover: #3a3a45;
+            --border-color: #3d3d4a;
+            --text-primary: #e8e8ed;
+            --text-secondary: #a0a0ad;
+            --text-muted: #6b6b78;
             --accent: #5c7cfa;
             --accent-hover: #748ffc;
             --danger: #e05252;
             --success: #51cf66;
             --warning: #f5a623;
-            --radius: 8px;
-            --shadow: 0 4px 12px rgba(0,0,0,0.4);
-            --track-height: 50px;
-            --ruler-height: 28px;
-            --preview-max-width: 100%;
+            --timeline-track-height: 56px;
+            --timeline-ruler-height: 30px;
+            --toolbar-height: 48px;
+            --panel-header-height: 40px;
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+            --transition-fast: 0.15s ease;
+            --transition-med: 0.25s ease;
+            --font-sans: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
         }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+
+        html, body {
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 13px;
+            line-height: 1.5;
             user-select: none;
             -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
+
         button {
-            background: var(--panel-light);
-            border: 1px solid var(--border);
-            color: var(--text);
-            border-radius: 6px;
-            padding: 8px 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: var(--radius-md);
+            padding: 7px 12px;
             cursor: pointer;
-            font-size: 0.85rem;
-            transition: background 0.2s, border 0.2s;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: inherit;
+            transition: all var(--transition-fast);
             white-space: nowrap;
+            line-height: 1.2;
+            min-height: 32px;
         }
+
         button:hover:not(:disabled) {
-            background: #3a3a45;
+            background: var(--bg-hover);
             border-color: #5a5a68;
         }
+
+        button:active:not(:disabled) {
+            transform: scale(0.97);
+        }
+
         button:disabled {
             opacity: 0.45;
             cursor: not-allowed;
-            background: #2a2a30;
+            pointer-events: none;
         }
+
         button.active {
             background: var(--accent);
             border-color: var(--accent);
             color: white;
         }
-        input, select, textarea {
-            background: #2a2a32;
-            border: 1px solid var(--border);
-            color: var(--text);
-            border-radius: 6px;
-            padding: 8px 10px;
-            font-size: 0.85rem;
-            outline: none;
+
+        button.danger {
+            background: #4a2828;
+            border-color: #6b3535;
+            color: #ff8888;
         }
+
+        button.danger:hover:not(:disabled) {
+            background: #5a3030;
+            border-color: #8b4545;
+        }
+
+        button.small {
+            padding: 4px 8px;
+            min-height: 26px;
+            font-size: 11px;
+        }
+
+        button.icon-btn {
+            padding: 6px 8px;
+            min-width: 32px;
+        }
+
+        input, select, textarea {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: var(--radius-sm);
+            padding: 6px 10px;
+            font-size: 12px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color var(--transition-fast);
+            width: 100%;
+        }
+
         input:focus, select:focus, textarea:focus {
             border-color: var(--accent);
         }
+
+        input[type="range"] {
+            padding: 0;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--bg-hover);
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid white;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 6px;
+        }
+
         label {
-            font-size: 0.8rem;
-            color: var(--text-dim);
             display: block;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .label-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             margin-bottom: 4px;
         }
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-        ::-webkit-scrollbar-track { background: #1a1a1f; }
-        ::-webkit-scrollbar-thumb { background: #3a3a45; border-radius: 5px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4a4a55; }
 
-        .app {
+        .label-row label {
+            margin-bottom: 0;
+            min-width: 60px;
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slider-group input[type="range"] {
+            flex: 1;
+        }
+
+        .slider-group .value-display {
+            min-width: 40px;
+            text-align: right;
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-hover);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a4a55;
+        }
+
+        .app-container {
             display: flex;
             flex-direction: column;
             height: 100vh;
-            min-height: 0;
+            width: 100%;
+            overflow: hidden;
         }
-        .top-bar {
+
+        /* Top Toolbar */
+        .top-toolbar {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 16px;
-            background: #1e1e24;
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
-            z-index: 50;
+            gap: 8px;
+            height: var(--toolbar-height);
+            padding: 0 16px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            z-index: 100;
         }
-        .top-bar .logo {
+
+        .app-logo {
+            font-size: 16px;
             font-weight: 700;
-            font-size: 1.2rem;
             background: linear-gradient(135deg, #5c7cfa, #9b5cfa);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-right: 10px;
+            background-clip: text;
+            margin-right: 12px;
+            letter-spacing: -0.5px;
         }
-        .top-bar .spacer {
+
+        .toolbar-spacer {
             flex: 1;
         }
-        .main {
+
+        .toolbar-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border-color);
+            margin: 0 4px;
+        }
+
+        /* Main Layout */
+        .main-layout {
             display: flex;
             flex: 1;
             min-height: 0;
-            gap: 0;
+            overflow: hidden;
         }
-        .left-panel, .right-panel {
-            background: var(--panel);
-            border-right: 1px solid var(--border);
-            border-left: 1px solid var(--border);
-            width: 250px;
+
+        /* Left Sidebar */
+        .left-sidebar {
+            width: 260px;
             min-width: 200px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            flex-shrink: 0;
         }
-        .right-panel {
-            border-right: none;
-            border-left: 1px solid var(--border);
-        }
-        .panel-tabs {
+
+        .sidebar-tabs {
             display: flex;
-            border-bottom: 1px solid var(--border);
-            background: #1e1e24;
-            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border-color);
+            height: var(--panel-header-height);
+            flex-shrink: 0;
         }
-        .panel-tab {
-            padding: 10px 12px;
+
+        .sidebar-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 4px;
             cursor: pointer;
-            font-size: 0.8rem;
-            background: transparent;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all var(--transition-fast);
+            background: none;
             border: none;
             border-bottom: 2px solid transparent;
-            color: var(--text-dim);
+            border-radius: 0;
+            min-height: 40px;
         }
-        .panel-tab.active {
-            color: var(--text);
+
+        .sidebar-tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .sidebar-tab.active {
+            color: var(--accent);
             border-bottom-color: var(--accent);
+            background: var(--bg-primary);
         }
-        .panel-content {
+
+        .sidebar-content {
             flex: 1;
             overflow-y: auto;
             padding: 12px;
@@ -164,196 +324,297 @@
             flex-direction: column;
             gap: 10px;
         }
-        .media-library, .audio-library, .text-library, .elements-library, .transitions-library {
+
+        .sidebar-content.hidden {
+            display: none;
+        }
+
+        /* Center Preview Area */
+        .center-area {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-        }
-        .media-item {
-            background: var(--panel-light);
-            border-radius: 6px;
-            padding: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: border 0.2s;
-        }
-        .media-item:hover { border-color: var(--accent); }
-        .media-item img, .media-item video {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 4px;
-            background: #111;
-        }
-        .media-item-info {
-            flex: 1;
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .center-preview {
-            flex: 1;
-            background: #0e0e12;
-            display: flex;
-            flex-direction: column;
+            background: #0d0d12;
             min-width: 0;
             position: relative;
         }
-        .preview-toolbar {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background: #1e1e24;
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
-        }
-        .preview-canvas-wrap {
+
+        .preview-container {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             position: relative;
+            padding: 12px;
             min-height: 0;
-            padding: 10px;
         }
-        #previewCanvas {
+
+        .preview-canvas {
             max-width: 100%;
             max-height: 100%;
             background: #000;
-            border-radius: 4px;
-            box-shadow: var(--shadow);
-            width: auto;
-            height: auto;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-md);
+            object-fit: contain;
         }
+
         .drop-overlay {
             position: absolute;
-            inset: 0;
-            background: rgba(92,124,250,0.15);
+            inset: 12px;
+            border: 2px dashed var(--accent);
+            border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 18px;
+            color: var(--accent);
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.2s;
+            transition: opacity var(--transition-med);
+            background: rgba(92, 124, 250, 0.05);
             z-index: 10;
         }
-        .drop-overlay.active { opacity: 1; }
-        .timeline {
-            background: #1e1e24;
-            border-top: 1px solid var(--border);
-            height: 300px;
-            min-height: 200px;
+
+        .drop-overlay.active {
+            opacity: 1;
+        }
+
+        .preview-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+
+        .time-display {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        /* Right Inspector */
+        .right-inspector {
+            width: 280px;
+            min-width: 220px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            z-index: 40;
+            overflow: hidden;
+            flex-shrink: 0;
         }
+
+        .inspector-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            height: var(--panel-header-height);
+            flex-shrink: 0;
+        }
+
+        .inspector-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all var(--transition-fast);
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            border-radius: 0;
+            min-height: 40px;
+        }
+
+        .inspector-tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .inspector-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background: var(--bg-primary);
+        }
+
+        .inspector-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .inspector-content.hidden {
+            display: none;
+        }
+
+        .inspector-section {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .inspector-section h4 {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Timeline */
+        .timeline-container {
+            height: 260px;
+            min-height: 180px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
         .timeline-toolbar {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
+            gap: 8px;
+            padding: 6px 12px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            height: 36px;
         }
-        .timeline-scroll {
+
+        .timeline-scroll-container {
             flex: 1;
-            overflow-x: auto;
-            overflow-y: auto;
+            overflow: auto;
             position: relative;
             display: flex;
+            flex-direction: column;
         }
+
         .timeline-ruler {
-            height: var(--ruler-height);
-            background: #1e1e24;
-            border-bottom: 1px solid var(--border);
+            height: var(--timeline-ruler-height);
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             left: 0;
             z-index: 20;
-            display: flex;
             min-width: 100%;
+            overflow: hidden;
         }
+
         .timeline-ruler-inner {
-            display: flex;
-            height: 100%;
             position: relative;
+            height: 100%;
         }
+
         .ruler-mark {
-            border-left: 1px solid #3a3a45;
-            font-size: 0.6rem;
-            color: var(--text-dim);
+            position: absolute;
+            bottom: 0;
+            font-size: 10px;
+            color: var(--text-muted);
+            border-left: 1px solid var(--border-color);
             padding-left: 4px;
-            white-space: nowrap;
+            height: 8px;
+            font-family: var(--font-mono);
         }
-        .tracks-container {
+
+        .timeline-tracks {
             flex: 1;
             display: flex;
             flex-direction: column;
             min-width: 100%;
-            position: relative;
-            padding-left: 0;
         }
-        .track {
-            height: var(--track-height);
-            border-bottom: 1px solid #2a2a32;
+
+        .track-row {
+            height: var(--timeline-track-height);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
-            align-items: center;
-            padding: 0 0 0 100px;
             position: relative;
-            background: #1a1a20;
+            background: var(--bg-primary);
+            flex-shrink: 0;
         }
+
         .track-label {
-            position: absolute;
-            left: 0;
-            width: 100px;
-            font-size: 0.7rem;
-            color: var(--text-dim);
+            width: 80px;
+            min-width: 80px;
             padding: 0 8px;
-            background: #1e1e24;
-            height: 100%;
+            font-size: 10px;
+            color: var(--text-muted);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            border-right: 1px solid var(--border);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            left: 0;
+            z-index: 5;
         }
-        .clip {
+
+        .track-clips {
+            flex: 1;
+            position: relative;
+            overflow: visible;
+        }
+
+        .clip-block {
             position: absolute;
-            height: calc(var(--track-height) - 12px);
             top: 6px;
+            height: calc(var(--timeline-track-height) - 12px);
             background: #3a5ccc;
             border: 1px solid #5c7cfa;
-            border-radius: 4px;
+            border-radius: 3px;
             cursor: pointer;
             display: flex;
             align-items: center;
             padding: 0 6px;
-            font-size: 0.65rem;
+            font-size: 10px;
             overflow: hidden;
             white-space: nowrap;
-            transition: box-shadow 0.1s;
+            transition: box-shadow var(--transition-fast);
+            min-width: 20px;
+            color: white;
+            font-weight: 500;
         }
-        .clip.selected {
+
+        .clip-block:hover {
+            box-shadow: 0 0 0 2px rgba(92, 124, 250, 0.4);
+        }
+
+        .clip-block.selected {
             border-color: white;
-            box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+            z-index: 10;
         }
-        .clip.audio-clip {
-            background: #4a3a7a;
+
+        .clip-block.audio-clip {
+            background: #5a3a7a;
             border-color: #8a5cfa;
         }
-        .clip img, .clip video {
-            width: 24px;
-            height: 24px;
+
+        .clip-block .clip-thumb {
+            width: 20px;
+            height: 20px;
             object-fit: cover;
             border-radius: 2px;
             margin-right: 4px;
+            background: rgba(0,0,0,0.3);
         }
+
         .playhead {
             position: absolute;
             top: 0;
@@ -362,474 +623,1244 @@
             background: var(--warning);
             z-index: 30;
             pointer-events: none;
+            box-shadow: 0 0 4px rgba(245, 166, 35, 0.6);
         }
+
         .playhead::after {
             content: '';
             position: absolute;
-            top: -4px;
+            top: -2px;
             left: -5px;
-            border: 5px solid transparent;
-            border-top-color: var(--warning);
+            width: 12px;
+            height: 8px;
+            background: var(--warning);
+            clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
         }
-        .timeline-time-display {
-            font-size: 0.8rem;
-            color: var(--text);
+
+        /* Media Items */
+        .media-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all var(--transition-fast);
         }
+
+        .media-item:hover {
+            border-color: var(--accent);
+            background: var(--bg-hover);
+        }
+
+        .media-item-thumb {
+            width: 36px;
+            height: 36px;
+            object-fit: cover;
+            border-radius: 3px;
+            background: #000;
+            flex-shrink: 0;
+        }
+
+        .media-item-info {
+            flex: 1;
+            min-width: 0;
+            font-size: 11px;
+        }
+
+        .media-item-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .media-item-meta {
+            font-size: 10px;
+            color: var(--text-muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Toast Notifications */
         .toast-container {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            z-index: 1000;
+            z-index: 10000;
             display: flex;
             flex-direction: column;
             gap: 8px;
+            pointer-events: none;
         }
+
         .toast {
-            background: #2d2d36;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px 16px;
-            box-shadow: var(--shadow);
-            font-size: 0.85rem;
-            animation: slideIn 0.3s;
-        }
-        @keyframes slideIn {
-            from { transform: translateX(20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        .disabled-note {
-            font-size: 0.7rem;
-            color: var(--warning);
-            margin-top: 4px;
-        }
-        .slider-row {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 10px 16px;
+            box-shadow: var(--shadow-md);
+            font-size: 12px;
+            animation: toastIn 0.3s ease;
+            pointer-events: auto;
             display: flex;
             align-items: center;
             gap: 8px;
+            max-width: 400px;
+            word-wrap: break-word;
         }
-        .slider-row input[type="range"] { flex: 1; }
-        .slider-value {
-            font-size: 0.75rem;
-            width: 35px;
-            text-align: right;
-            color: var(--text-dim);
+
+        .toast.success {
+            border-left: 3px solid var(--success);
         }
-        .preview-zoom-select, .playback-speed-select {
-            max-width: 90px;
+
+        .toast.error {
+            border-left: 3px solid var(--danger);
+        }
+
+        .toast.warning {
+            border-left: 3px solid var(--warning);
+        }
+
+        @keyframes toastIn {
+            from {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.removing {
+            animation: toastOut 0.3s ease forwards;
+        }
+
+        @keyframes toastOut {
+            to {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            width: 450px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal h3 {
+            font-size: 16px;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .modal .form-group {
+            margin-bottom: 12px;
+        }
+
+        .modal .form-group label {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .modal .form-group select,
+        .modal .form-group input {
+            width: 100%;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gap-8 {
+            gap: 8px;
+        }
+
+        .gap-12 {
+            gap: 12px;
+        }
+
+        .mt-8 {
+            margin-top: 8px;
+        }
+
+        .mb-8 {
+            margin-bottom: 8px;
         }
     </style>
 </head>
 <body>
-<div class="app" id="app">
-    <!-- Top Bar -->
-    <div class="top-bar">
-        <span class="logo">✂️ VideoEditor</span>
-        <button id="btnNewProject" title="New Project">📄 New</button>
-        <button id="btnOpenProject" title="Load Project JSON">📂 Open</button>
-        <button id="btnSaveProject" title="Save Project JSON">💾 Save</button>
-        <button id="btnUndo" title="Undo (Ctrl+Z)">↩️ Undo</button>
-        <button id="btnRedo" title="Redo (Ctrl+Y)">↪️ Redo</button>
-        <button id="btnExport" class="active" title="Export WebM">🎬 Export</button>
-        <div class="spacer"></div>
-        <span id="projectName" style="font-size:0.8rem; color:var(--text-dim);">Project: Untitled</span>
-    </div>
+    <div class="app-container" id="app">
+        <!-- Top Toolbar -->
+        <header class="top-toolbar">
+            <span class="app-logo">🎬 ProEditor</span>
+            <button id="btnNewProject" title="Create new project (Ctrl+N)">📄 New</button>
+            <button id="btnOpenProject" title="Load project from JSON">📂 Open</button>
+            <button id="btnSaveProject" title="Save project as JSON">💾 Save</button>
+            <div class="toolbar-divider"></div>
+            <button id="btnUndo" title="Undo (Ctrl+Z)" disabled>↩️ Undo</button>
+            <button id="btnRedo" title="Redo (Ctrl+Y)" disabled>↪️ Redo</button>
+            <div class="toolbar-divider"></div>
+            <button id="btnExport" title="Export video (WebM)">🎬 Export</button>
+            <div class="toolbar-spacer"></div>
+            <span class="time-display" id="projectNameDisplay">Untitled Project</span>
+        </header>
 
-    <div class="main">
-        <!-- Left Panel -->
-        <div class="left-panel">
-            <div class="panel-tabs">
-                <div class="panel-tab active" data-tab="media">Media</div>
-                <div class="panel-tab" data-tab="audio">Audio</div>
-                <div class="panel-tab" data-tab="text">Text</div>
-                <div class="panel-tab" data-tab="elements">Elements</div>
-                <div class="panel-tab" data-tab="transitions">Transitions</div>
-            </div>
-            <div class="panel-content" id="leftPanelContent">
-                <!-- Media Library -->
-                <div class="media-library" id="mediaLibrary">
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Left Sidebar -->
+            <aside class="left-sidebar">
+                <div class="sidebar-tabs">
+                    <button class="sidebar-tab active" data-tab="media">Media</button>
+                    <button class="sidebar-tab" data-tab="audio">Audio</button>
+                    <button class="sidebar-tab" data-tab="text">Text</button>
+                    <button class="sidebar-tab" data-tab="elements">Elements</button>
+                    <button class="sidebar-tab" data-tab="transitions">Transitions</button>
+                </div>
+                <div class="sidebar-content" id="sidebar-media">
                     <button id="btnImportMedia">📁 Import Media</button>
-                    <input type="file" id="fileInput" multiple accept="video/*,audio/*,image/*" style="display:none;">
-                    <div id="mediaList" style="display:flex;flex-direction:column;gap:6px;"></div>
+                    <input type="file" id="fileInput" multiple accept="video/*,audio/*,image/*" class="hidden">
+                    <div id="mediaLibrary" class="flex-col gap-8"></div>
                 </div>
-                <!-- Audio Library -->
-                <div class="audio-library" id="audioLibrary" style="display:none;">
-                    <button id="btnAddExternalAudio">🎵 Add Audio File</button>
-                    <input type="file" id="audioFileInput" accept="audio/*" style="display:none;">
-                    <div id="audioList" style="display:flex;flex-direction:column;gap:6px;"></div>
+                <div class="sidebar-content hidden" id="sidebar-audio">
+                    <button id="btnAddAudio">🎵 Add Audio Track</button>
+                    <input type="file" id="audioFileInput" accept="audio/*" class="hidden">
+                    <div id="audioLibrary" class="flex-col gap-8"></div>
                 </div>
-                <!-- Text Library -->
-                <div class="text-library" id="textLibrary" style="display:none;">
-                    <button id="btnAddTitle">➕ Add Title Overlay</button>
-                    <div id="titlePresets" style="display:flex;flex-direction:column;gap:6px;">
-                        <button data-preset="simple">Simple Title</button>
-                        <button data-preset="subtitle">Subtitle</button>
-                        <button data-preset="lowerthird">Lower Third</button>
-                        <button data-preset="center">Center Title</button>
-                        <button data-preset="endcard">End Card</button>
+                <div class="sidebar-content hidden" id="sidebar-text">
+                    <button id="btnAddTextOverlay">➕ Add Text Overlay</button>
+                    <div class="flex-col gap-8 mt-8">
+                        <button class="small" data-preset="title">Simple Title</button>
+                        <button class="small" data-preset="subtitle">Subtitle</button>
+                        <button class="small" data-preset="lower-third">Lower Third</button>
+                        <button class="small" data-preset="center">Center Title</button>
                     </div>
                 </div>
-                <!-- Elements Library -->
-                <div class="elements-library" id="elementsLibrary" style="display:none;">
+                <div class="sidebar-content hidden" id="sidebar-elements">
                     <button id="btnAddImageOverlay">🖼️ Add Image Overlay</button>
-                    <input type="file" id="imageOverlayInput" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none;">
-                    <div id="imageOverlayList" style="display:flex;flex-direction:column;gap:6px;"></div>
+                    <input type="file" id="imageOverlayInput" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden">
+                    <div id="imageOverlayList" class="flex-col gap-8"></div>
                 </div>
-                <!-- Transitions Library -->
-                <div class="transitions-library" id="transitionsLibrary" style="display:none;">
-                    <label>Transition Type</label>
-                    <select id="transitionSelect">
-                        <option value="none">None</option>
-                        <option value="fade">Fade</option>
-                        <option value="crossfade">Crossfade</option>
-                        <option value="fadetoblack">Fade to Black</option>
-                        <option value="slideleft">Slide Left</option>
-                        <option value="slideright">Slide Right</option>
-                        <option value="zoom">Zoom</option>
+                <div class="sidebar-content hidden" id="sidebar-transitions">
+                    <div class="inspector-section">
+                        <h4>Transition Settings</h4>
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select id="transitionType">
+                                <option value="none">None</option>
+                                <option value="fade">Fade</option>
+                                <option value="crossfade">Crossfade</option>
+                                <option value="fade-to-black">Fade to Black</option>
+                                <option value="slide-left">Slide Left</option>
+                                <option value="slide-right">Slide Right</option>
+                                <option value="zoom">Zoom</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Duration (seconds)</label>
+                            <input type="number" id="transitionDuration" value="1.0" min="0.1" step="0.1">
+                        </div>
+                        <button id="btnApplyTransition">Apply to Selected Clip</button>
+                        <p style="font-size:10px;color:var(--text-muted);margin-top:6px;">Preview only — real rendering limited by browser.</p>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center Preview -->
+            <main class="center-area">
+                <div class="preview-container" id="previewContainer">
+                    <canvas class="preview-canvas" id="previewCanvas"></canvas>
+                    <div class="drop-overlay" id="dropOverlay">Drop media here to import</div>
+                </div>
+                <div class="preview-controls">
+                    <button id="btnPrevFrame" class="small" title="Previous frame">⏮</button>
+                    <button id="btnPlayPause" class="small" title="Play/Pause (Space)">▶️</button>
+                    <button id="btnNextFrame" class="small" title="Next frame">⏭</button>
+                    <button id="btnGoToStart" class="small" title="Go to beginning (Home)">⏮ Start</button>
+                    <button id="btnGoToEnd" class="small" title="Go to end (End)">End ⏭</button>
+                    <span class="time-display" id="currentTimeDisplay">00:00:00.00</span>
+                    <span class="time-display">/</span>
+                    <span class="time-display" id="totalTimeDisplay">00:00:00.00</span>
+                    <input type="range" id="progressBar" min="0" max="100" value="0" step="0.01" style="flex:1;min-width:80px;">
+                    <select id="playbackSpeed" class="small" title="Playback speed">
+                        <option value="0.25">0.25x</option>
+                        <option value="0.5">0.5x</option>
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>1x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2x</option>
+                        <option value="3">3x</option>
+                        <option value="4">4x</option>
                     </select>
-                    <label>Duration (s)</label>
-                    <input type="number" id="transitionDuration" value="1.0" min="0.1" step="0.1">
-                    <button id="btnApplyTransition">Apply to Selected Clip</button>
-                    <p style="font-size:0.7rem; color:var(--text-dim);">Transition preview only, real render limited.</p>
+                    <select id="previewZoom" class="small" title="Preview zoom">
+                        <option value="fit">Fit</option>
+                        <option value="0.5">50%</option>
+                        <option value="0.75">75%</option>
+                        <option value="1">100%</option>
+                        <option value="1.5">150%</option>
+                        <option value="2">200%</option>
+                    </select>
+                    <button id="btnMute" class="small" title="Mute/Unmute">🔊</button>
+                    <input type="range" id="volumeSlider" min="0" max="1" value="1" step="0.01" style="width:60px;">
+                    <button id="btnFullscreen" class="small" title="Fullscreen preview">⛶</button>
                 </div>
-            </div>
+            </main>
+
+            <!-- Right Inspector -->
+            <aside class="right-inspector">
+                <div class="inspector-tabs">
+                    <button class="inspector-tab active" data-tab="basic">Basic</button>
+                    <button class="inspector-tab" data-tab="transform">Transform</button>
+                    <button class="inspector-tab" data-tab="video">Video</button>
+                    <button class="inspector-tab" data-tab="audio">Audio</button>
+                    <button class="inspector-tab" data-tab="filters">Filters</button>
+                </div>
+                <div class="inspector-content" id="inspector-basic">
+                    <div class="inspector-section">
+                        <h4>Clip Information</h4>
+                        <div id="clipInfoDisplay" style="font-size:11px;color:var(--text-secondary);">No clip selected</div>
+                    </div>
+                    <div class="inspector-section">
+                        <h4>Trim</h4>
+                        <div class="form-group">
+                            <label>Start Time (source)</label>
+                            <input type="number" id="trimStartInput" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>End Time (source)</label>
+                            <input type="number" id="trimEndInput" step="0.01" min="0">
+                        </div>
+                        <button id="btnApplyTrim" class="small">Apply Trim</button>
+                        <button id="btnResetTrim" class="small mt-8">Reset Trim</button>
+                    </div>
+                    <div class="inspector-section">
+                        <h4>Actions</h4>
+                        <div class="flex-col gap-8">
+                            <button id="btnSplitClip" class="small">✂️ Split at Playhead (S)</button>
+                            <button id="btnDuplicateClip" class="small">📋 Duplicate Clip</button>
+                            <button id="btnDeleteClip" class="small danger">🗑️ Delete Clip (Delete)</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="inspector-content hidden" id="inspector-transform">
+                    <div class="inspector-section">
+                        <h4>Position</h4>
+                        <div class="slider-group">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:20px;">X</span>
+                            <input type="range" id="transformX" min="-500" max="500" value="0">
+                            <span class="value-display" id="transformXVal">0</span>
+                        </div>
+                        <div class="slider-group mt-8">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:20px;">Y</span>
+                            <input type="range" id="transformY" min="-500" max="500" value="0">
+                            <span class="value-display" id="transformYVal">0</span>
+                        </div>
+                    </div>
+                    <div class="inspector-section">
+                        <h4>Scale</h4>
+                        <div class="slider-group">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:20px;">W</span>
+                            <input type="range" id="transformScaleX" min="10" max="300" value="100">
+                            <span class="value-display" id="transformScaleXVal">100%</span>
+                        </div>
+                        <div class="slider-group mt-8">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:20px;">H</span>
+                            <input type="range" id="transformScaleY" min="10" max="300" value="100">
+                            <span class="value-display" id="transformScaleYVal">100%</span>
+                        </div>
+                        <div class="label-row mt-8">
+                            <label><input type="checkbox" id="lockAspectRatio" checked> Lock Aspect</label>
+                        </div>
+                    </div>
+                    <div class="inspector-section">
+                        <h4>Rotation & Flip</h4>
+                        <div class="slider-group">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:20px;">Rot</span>
+                            <input type="range" id="transformRotation" min="-180" max="180" value="0">
+                            <span class="value-display" id="transformRotationVal">0°</span>
+                        </div>
+                        <div class="label-row mt-8">
+                            <label><input type="checkbox" id="transformFlipH"> Flip Horizontal</label>
+                            <label><input type="checkbox" id="transformFlipV"> Flip Vertical</label>
+                        </div>
+                    </div>
+                    <button id="btnResetTransform" class="small">Reset Transform</button>
+                </div>
+                <div class="inspector-content hidden" id="inspector-video">
+                    <div class="inspector-section">
+                        <h4>Speed</h4>
+                        <select id="clipSpeedSelect">
+                            <option value="0.25">0.25x</option>
+                            <option value="0.5">0.5x</option>
+                            <option value="0.75">0.75x</option>
+                            <option value="1" selected>1x</option>
+                            <option value="1.25">1.25x</option>
+                            <option value="1.5">1.5x</option>
+                            <option value="2">2x</option>
+                            <option value="3">3x</option>
+                            <option value="4">4x</option>
+                        </select>
+                        <div id="speedResultDuration" style="font-size:11px;color:var(--text-muted);margin-top:6px;"></div>
+                    </div>
+                    <div class="inspector-section">
+                        <h4>Crop</h4>
+                        <div class="slider-group">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:20px;">T</span>
+                            <input type="range" id="cropTop" min="0" max="50" value="0">
+                            <span class="value-display" id="cropTopVal">0%</span>
+                        </div>
+                        <div class="slider-group mt-8">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:20px;">B</span>
+                            <input type="range" id="cropBottom" min="0" max="50" value="0">
+                            <span class="value-display" id="cropBottomVal">0%</span>
+                        </div>
+                        <div class="slider-group mt-8">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:20px;">L</span>
+                            <input type="range" id="cropLeft" min="0" max="50" value="0">
+                            <span class="value-display" id="cropLeftVal">0%</span>
+                        </div>
+                        <div class="slider-group mt-8">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:20px;">R</span>
+                            <input type="range" id="cropRight" min="0" max="50" value="0">
+                            <span class="value-display" id="cropRightVal">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="inspector-content hidden" id="inspector-audio">
+                    <div class="inspector-section">
+                        <h4>Clip Volume</h4>
+                        <div class="slider-group">
+                            <input type="range" id="clipVolume" min="0" max="1" value="1" step="0.01">
+                            <span class="value-display" id="clipVolumeVal">100%</span>
+                        </div>
+                        <button id="btnMuteClip" class="small mt-8">🔇 Mute/Unmute Clip</button>
+                    </div>
+                    <div class="inspector-section">
+                        <h4>Fade</h4>
+                        <div class="form-group">
+                            <label>Fade In (seconds)</label>
+                            <input type="number" id="fadeInInput" value="0" min="0" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Fade Out (seconds)</label>
+                            <input type="number" id="fadeOutInput" value="0" min="0" step="0.1">
+                        </div>
+                    </div>
+                    <div class="inspector-section">
+                        <h4>Detach Audio</h4>
+                        <button id="btnDetachAudio" class="small">Detach Audio from Video</button>
+                        <p style="font-size:10px;color:var(--text-muted);margin-top:6px;">Creates separate audio clip (concept)</p>
+                    </div>
+                </div>
+                <div class="inspector-content hidden" id="inspector-filters">
+                    <div class="inspector-section">
+                        <h4>Adjustments</h4>
+                        <div class="slider-group">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:60px;">Brightness</span>
+                            <input type="range" id="filterBrightness" min="0" max="200" value="100">
+                            <span class="value-display" id="filterBrightnessVal">100</span>
+                        </div>
+                        <div class="slider-group mt-8">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:60px;">Contrast</span>
+                            <input type="range" id="filterContrast" min="0" max="200" value="100">
+                            <span class="value-display" id="filterContrastVal">100</span>
+                        </div>
+                        <div class="slider-group mt-8">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:60px;">Saturation</span>
+                            <input type="range" id="filterSaturation" min="0" max="200" value="100">
+                            <span class="value-display" id="filterSaturationVal">100</span>
+                        </div>
+                    </div>
+                    <div class="inspector-section">
+                        <h4>Effects</h4>
+                        <div class="slider-group">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:60px;">Blur</span>
+                            <input type="range" id="filterBlur" min="0" max="20" value="0" step="0.1">
+                            <span class="value-display" id="filterBlurVal">0</span>
+                        </div>
+                        <div class="slider-group mt-8">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:60px;">Grayscale</span>
+                            <input type="range" id="filterGrayscale" min="0" max="100" value="0">
+                            <span class="value-display" id="filterGrayscaleVal">0%</span>
+                        </div>
+                        <div class="slider-group mt-8">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:60px;">Sepia</span>
+                            <input type="range" id="filterSepia" min="0" max="100" value="0">
+                            <span class="value-display" id="filterSepiaVal">0%</span>
+                        </div>
+                        <div class="slider-group mt-8">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:60px;">Hue</span>
+                            <input type="range" id="filterHue" min="0" max="360" value="0">
+                            <span class="value-display" id="filterHueVal">0°</span>
+                        </div>
+                        <div class="slider-group mt-8">
+                            <span style="font-size:10px;color:var(--text-muted);min-width:60px;">Opacity</span>
+                            <input type="range" id="filterOpacity" min="0" max="100" value="100">
+                            <span class="value-display" id="filterOpacityVal">100%</span>
+                        </div>
+                    </div>
+                    <button id="btnResetFilters" class="small">Reset All Filters</button>
+                    <button id="btnBeforeAfter" class="small mt-8">👁️ Before/After Toggle</button>
+                </div>
+            </aside>
         </div>
 
-        <!-- Center Preview -->
-        <div class="center-preview" id="centerPreview">
-            <div class="preview-toolbar">
-                <button id="btnPrevFrame">⏮ Frame</button>
-                <button id="btnPlayPause">▶️ Play</button>
-                <button id="btnNextFrame">⏭ Frame</button>
-                <button id="btnGoStart">⏮ Start</button>
-                <button id="btnGoEnd">⏭ End</button>
-                <span id="currentTimeDisplay">00:00:00.00</span> / <span id="totalTimeDisplay">00:00:00.00</span>
-                <input type="range" id="progressBar" min="0" max="100" value="0" step="0.01" style="flex:1; min-width:80px;">
-                <select id="playbackSpeed" class="playback-speed-select">
-                    <option value="0.25">0.25x</option>
-                    <option value="0.5">0.5x</option>
-                    <option value="1" selected>1x</option>
-                    <option value="1.5">1.5x</option>
-                    <option value="2">2x</option>
+        <!-- Timeline -->
+        <section class="timeline-container">
+            <div class="timeline-toolbar">
+                <button id="btnZoomIn" class="small" title="Zoom in">➕</button>
+                <button id="btnZoomOut" class="small" title="Zoom out">➖</button>
+                <button id="btnSnapToggle" class="small active" title="Toggle snapping">🧲 Snap</button>
+                <span class="time-display" id="timelinePlayheadDisplay">00:00:00.00</span>
+                <div class="toolbar-spacer"></div>
+                <span style="font-size:10px;color:var(--text-muted);">V1 · A1 · A2</span>
+            </div>
+            <div class="timeline-scroll-container" id="timelineScrollContainer">
+                <div class="timeline-ruler" id="timelineRuler">
+                    <div class="timeline-ruler-inner" id="timelineRulerInner"></div>
+                </div>
+                <div class="timeline-tracks" id="timelineTracks">
+                    <div class="track-row" data-track="video">
+                        <div class="track-label">V1</div>
+                        <div class="track-clips" id="track-video"></div>
+                    </div>
+                    <div class="track-row" data-track="audio">
+                        <div class="track-label">A1</div>
+                        <div class="track-clips" id="track-audio"></div>
+                    </div>
+                </div>
+                <div class="playhead" id="playhead"></div>
+            </div>
+        </section>
+
+        <!-- Hidden inputs -->
+        <input type="file" id="projectFileInput" accept="application/json" class="hidden">
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal-overlay hidden" id="exportModal">
+        <div class="modal">
+            <h3>Export Video</h3>
+            <div class="form-group">
+                <label>Resolution</label>
+                <select id="exportResolution">
+                    <option value="480p">480p</option>
+                    <option value="720p" selected>720p</option>
+                    <option value="1080p">1080p</option>
                 </select>
-                <select id="previewZoom" class="preview-zoom-select">
-                    <option value="fit">Fit</option>
-                    <option value="0.5">50%</option>
-                    <option value="0.75">75%</option>
-                    <option value="1">100%</option>
-                    <option value="1.25">125%</option>
-                    <option value="1.5">150%</option>
-                    <option value="2">200%</option>
+            </div>
+            <div class="form-group">
+                <label>Frame Rate</label>
+                <select id="exportFps">
+                    <option value="24">24 FPS</option>
+                    <option value="25">25 FPS</option>
+                    <option value="30" selected>30 FPS</option>
+                    <option value="60">60 FPS</option>
                 </select>
-                <button id="btnMute">🔊</button>
-                <input type="range" id="volumeControl" min="0" max="1" value="0.8" step="0.01" style="width:70px;">
-                <button id="btnFullscreen">⛶</button>
             </div>
-            <div class="preview-canvas-wrap" id="previewCanvasWrap">
-                <canvas id="previewCanvas"></canvas>
-                <div class="drop-overlay" id="dropOverlay">Drop your videos here</div>
+            <div class="form-group">
+                <label>Quality</label>
+                <select id="exportQuality">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                </select>
             </div>
-        </div>
-
-        <!-- Right Panel -->
-        <div class="right-panel">
-            <div class="panel-tabs">
-                <div class="panel-tab active" data-tab="basic">Basic</div>
-                <div class="panel-tab" data-tab="video">Video</div>
-                <div class="panel-tab" data-tab="audio">Audio</div>
-                <div class="panel-tab" data-tab="transform">Transform</div>
-                <div class="panel-tab" data-tab="filters">Filters</div>
+            <p style="font-size:11px;color:var(--warning);margin-bottom:12px;">⚠️ Only WebM export is supported in this browser. MP4 not available.</p>
+            <div class="modal-actions">
+                <button id="btnCancelExport">Cancel</button>
+                <button id="btnStartExport" class="active">Start Export</button>
             </div>
-            <div class="panel-content" id="rightPanelContent">
-                <!-- Basic -->
-                <div id="basicTab" style="display:flex;flex-direction:column;gap:8px;">
-                    <label>Clip Info</label>
-                    <div id="clipInfo" style="font-size:0.8rem;color:var(--text-dim);">No clip selected</div>
-                    <label>Set In / Out</label>
-                    <div class="slider-row"><span style="width:30px;">In</span><input type="number" id="trimInInput" step="0.01"><button id="btnSetIn">Set In</button></div>
-                    <div class="slider-row"><span style="width:30px;">Out</span><input type="number" id="trimOutInput" step="0.01"><button id="btnSetOut">Set Out</button></div>
-                    <button id="btnResetTrim">Reset Trim</button>
-                    <button id="btnSplitClip" title="Split at playhead (S)">✂️ Split at Playhead</button>
-                    <button id="btnDuplicateClip">📋 Duplicate</button>
-                    <button id="btnDeleteClip">🗑️ Delete</button>
-                </div>
-                <!-- Video -->
-                <div id="videoTab" style="display:none;flex-direction:column;gap:8px;">
-                    <label>Speed</label>
-                    <select id="clipSpeed">
-                        <option value="0.25">0.25x</option><option value="0.5">0.5x</option>
-                        <option value="0.75">0.75x</option><option value="1" selected>1x</option>
-                        <option value="1.25">1.25x</option><option value="1.5">1.5x</option>
-                        <option value="2">2x</option><option value="3">3x</option><option value="4">4x</option>
-                    </select>
-                    <div id="resultingDuration" style="font-size:0.75rem;color:var(--text-dim);"></div>
-                </div>
-                <!-- Audio -->
-                <div id="audioTab" style="display:none;flex-direction:column;gap:8px;">
-                    <label>Volume</label>
-                    <input type="range" id="clipVolume" min="0" max="1" step="0.01" value="1">
-                    <button id="btnMuteClip">Mute Clip</button>
-                    <label>Fade In (s)</label><input type="number" id="fadeInInput" value="0" step="0.1">
-                    <label>Fade Out (s)</label><input type="number" id="fadeOutInput" value="0" step="0.1">
-                    <button id="btnDetachAudio">Detach Audio (concept)</button>
-                </div>
-                <!-- Transform -->
-                <div id="transformTab" style="display:none;flex-direction:column;gap:8px;">
-                    <label>Position X/Y</label>
-                    <div class="slider-row"><span>X</span><input type="range" id="posX" min="-500" max="500" value="0" step="1"></div>
-                    <div class="slider-row"><span>Y</span><input type="range" id="posY" min="-500" max="500" value="0" step="1"></div>
-                    <label>Scale W/H</label>
-                    <div class="slider-row"><span>W</span><input type="range" id="scaleW" min="10" max="300" value="100" step="1"></div>
-                    <div class="slider-row"><span>H</span><input type="range" id="scaleH" min="10" max="300" value="100" step="1"></div>
-                    <label><input type="checkbox" id="lockAspect" checked> Lock Aspect</label>
-                    <label>Rotation</label>
-                    <input type="range" id="rotation" min="-180" max="180" value="0" step="1">
-                    <label>Crop Top/Bottom/Left/Right</label>
-                    <div class="slider-row"><span>T</span><input type="range" id="cropTop" min="0" max="50" value="0"></div>
-                    <div class="slider-row"><span>B</span><input type="range" id="cropBottom" min="0" max="50" value="0"></div>
-                    <div class="slider-row"><span>L</span><input type="range" id="cropLeft" min="0" max="50" value="0"></div>
-                    <div class="slider-row"><span>R</span><input type="range" id="cropRight" min="0" max="50" value="0"></div>
-                    <label>Flip</label>
-                    <div><label><input type="checkbox" id="flipH"> Horizontal</label> <label><input type="checkbox" id="flipV"> Vertical</label></div>
-                    <label>Preset Aspect</label>
-                    <select id="aspectPreset">
-                        <option value="original">Original</option><option value="16:9">16:9</option><option value="9:16">9:16</option>
-                        <option value="1:1">1:1</option><option value="4:3">4:3</option><option value="3:4">3:4</option>
-                    </select>
-                    <button id="btnResetTransform">Reset Transform</button>
-                </div>
-                <!-- Filters -->
-                <div id="filtersTab" style="display:none;flex-direction:column;gap:8px;">
-                    <label>Brightness</label><input type="range" id="filterBrightness" min="0" max="200" value="100">
-                    <label>Contrast</label><input type="range" id="filterContrast" min="0" max="200" value="100">
-                    <label>Saturation</label><input type="range" id="filterSaturation" min="0" max="200" value="100">
-                    <label>Exposure</label><input type="range" id="filterExposure" min="0" max="200" value="100">
-                    <label>Temperature</label><input type="range" id="filterTemperature" min="-100" max="100" value="0">
-                    <label>Tint</label><input type="range" id="filterTint" min="-100" max="100" value="0">
-                    <label>Blur</label><input type="range" id="filterBlur" min="0" max="10" value="0" step="0.1">
-                    <label>Grayscale</label><input type="range" id="filterGrayscale" min="0" max="100" value="0">
-                    <label>Sepia</label><input type="range" id="filterSepia" min="0" max="100" value="0">
-                    <label>Hue</label><input type="range" id="filterHue" min="0" max="360" value="0">
-                    <label>Opacity</label><input type="range" id="filterOpacity" min="0" max="100" value="100">
-                    <div><label><input type="checkbox" id="beforeAfterToggle"> Before/After</label></div>
-                    <button id="btnResetFilters">Reset Filters</button>
-                </div>
-            </div>
+            <div id="exportProgressDisplay" style="margin-top:12px;font-size:11px;color:var(--text-secondary);"></div>
         </div>
     </div>
 
-    <!-- Timeline -->
-    <div class="timeline" id="timeline">
-        <div class="timeline-toolbar">
-            <button id="btnTimelineZoomIn" title="Zoom In">➕</button>
-            <button id="btnTimelineZoomOut" title="Zoom Out">➖</button>
-            <span class="timeline-time-display" id="timelinePlayheadDisplay">00:00:00.00</span>
-            <button id="btnSnapToggle" class="active" title="Snap">🧲 Snap</button>
-            <span style="flex:1;"></span>
-            <span style="font-size:0.7rem;color:var(--text-dim);">Tracks: Video (top), Audio (bottom)</span>
-        </div>
-        <div class="timeline-scroll" id="timelineScroll">
-            <div id="timelineRuler" class="timeline-ruler">
-                <div class="timeline-ruler-inner" id="rulerInner"></div>
-            </div>
-            <div class="tracks-container" id="tracksContainer">
-                <div class="track" id="videoTrack" data-track="video">
-                    <div class="track-label">Video 1</div>
-                    <div class="track-clips" id="videoTrackClips" style="position:relative; flex:1; height:100%;"></div>
-                </div>
-                <div class="track" id="audioTrack" data-track="audio">
-                    <div class="track-label">Audio 1</div>
-                    <div class="track-clips" id="audioTrackClips" style="position:relative; flex:1; height:100%;"></div>
-                </div>
-            </div>
-            <div class="playhead" id="playhead" style="left:100px;"></div>
-        </div>
-    </div>
-</div>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
-<!-- Export Modal -->
-<div id="exportModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:100; align-items:center; justify-content:center;">
-    <div style="background:var(--panel); border-radius:12px; padding:24px; width:400px; box-shadow:var(--shadow);">
-        <h3>Export WebM</h3>
-        <label>Resolution</label>
-        <select id="exportResolution"><option>480p</option><option selected>720p</option><option>1080p</option></select>
-        <label>Frame Rate</label>
-        <select id="exportFps"><option>24</option><option>25</option><option selected>30</option><option>60</option></select>
-        <label>Quality</label>
-        <select id="exportQuality"><option>Low</option><option selected>Medium</option><option>High</option></select>
-        <p style="font-size:0.7rem;color:var(--warning);">MP4 not natively supported. WebM only.</p>
-        <div style="display:flex; gap:8px; margin-top:16px;">
-            <button id="btnStartExport">Start Export</button>
-            <button id="btnCancelExport">Cancel</button>
-        </div>
-        <div id="exportProgress" style="margin-top:12px; font-size:0.8rem;"></div>
-    </div>
-</div>
+    <script>
+        'use strict';
 
-<div class="toast-container" id="toastContainer"></div>
+        // ============================================
+        // EDITOR STATE
+        // ============================================
+        class EditorState {
+            constructor() {
+                this.media = []; // {id, name, type, url, duration, width, height, size}
+                this.clips = []; // {id, mediaId, track, timelineStart, timelineDuration, sourceStart, sourceEnd, speed, volume, muted, fadeIn, fadeOut, transform, filters}
+                this.textOverlays = []; // {id, text, start, end, x, y, fontSize, fontFamily, fontWeight, color, alignment}
+                this.imageOverlays = []; // {id, mediaId, start, end, x, y, scale, rotation, opacity}
+                this.playhead = 0;
+                this.selectedClipId = null;
+                this.playing = false;
+                this.zoom = 1;
+                this.snapEnabled = true;
+                this.projectName = 'Untitled Project';
+                this.undoStack = [];
+                this.redoStack = [];
+                this.currentHistoryState = null;
+            }
 
-<input type="file" id="projectFileInput" accept="application/json" style="display:none;">
-<script>
-    (function() {
-        // ----- STATE -----
-        const state = {
-            media: [], // {id, name, type, url, duration, width, height, size}
-            clips: [], // {id, mediaId, track, start, end, trimStart, trimEnd, speed, volume, muted, fadeIn, fadeOut, transform, filters, textOverlay, imageOverlay}
-            playhead: 0,
-            selectedClipId: null,
-            playing: false,
-            zoom: 1,
-            snap: true,
-            history: [],
-            historyIndex: -1,
-            projectName: 'Untitled',
-            transitions: [],
-            textOverlays: [],
-            imageOverlays: []
-        };
+            get totalDuration() {
+                let maxEnd = 0;
+                this.clips.forEach(clip => {
+                    const end = clip.timelineStart + clip.timelineDuration;
+                    if (end > maxEnd) maxEnd = end;
+                });
+                return maxEnd || 30;
+            }
 
-        // ----- UTILS -----
-        function formatTime(seconds) {
-            if (!isFinite(seconds) || seconds < 0) seconds = 0;
-            const d = new Date(seconds * 1000);
-            const hh = String(d.getUTCHours()).padStart(2,'0');
-            const mm = String(d.getUTCMinutes()).padStart(2,'0');
-            const ss = String(d.getUTCSeconds()).padStart(2,'0');
-            const ms = String(Math.floor((seconds%1)*100)).padStart(2,'0');
-            return `${hh}:${mm}:${ss}.${ms}`;
+            getClipById(id) {
+                return this.clips.find(clip => clip.id === id);
+            }
+
+            getSelectedClip() {
+                return this.getClipById(this.selectedClipId);
+            }
+
+            snapshot() {
+                return JSON.stringify({
+                    clips: this.clips,
+                    textOverlays: this.textOverlays,
+                    imageOverlays: this.imageOverlays,
+                    playhead: this.playhead,
+                    projectName: this.projectName
+                });
+            }
+
+            saveHistory() {
+                const snapshot = this.snapshot();
+                if (this.currentHistoryState === snapshot) return;
+                this.undoStack.push(snapshot);
+                if (this.undoStack.length > 50) this.undoStack.shift();
+                this.redoStack = [];
+                this.currentHistoryState = snapshot;
+                updateUndoRedoButtons();
+            }
+
+            undo() {
+                if (this.undoStack.length === 0) return;
+                const current = this.snapshot();
+                this.redoStack.push(current);
+                const previous = this.undoStack.pop();
+                this.restoreFromSnapshot(previous);
+                this.currentHistoryState = previous;
+                updateUndoRedoButtons();
+            }
+
+            redo() {
+                if (this.redoStack.length === 0) return;
+                const current = this.snapshot();
+                this.undoStack.push(current);
+                const next = this.redoStack.pop();
+                this.restoreFromSnapshot(next);
+                this.currentHistoryState = next;
+                updateUndoRedoButtons();
+            }
+
+            restoreFromSnapshot(snapshotStr) {
+                const data = JSON.parse(snapshotStr);
+                this.clips = data.clips || [];
+                this.textOverlays = data.textOverlays || [];
+                this.imageOverlays = data.imageOverlays || [];
+                this.playhead = data.playhead || 0;
+                this.projectName = data.projectName || 'Untitled Project';
+                renderTimeline();
+                updatePlayheadUI();
+                renderPreview();
+            }
         }
-        function toast(msg) {
-            const container = document.getElementById('toastContainer');
-            const t = document.createElement('div');
-            t.className = 'toast';
-            t.textContent = msg;
-            container.appendChild(t);
-            setTimeout(() => t.remove(), 2500);
-        }
-        function uuid() { return 'id-' + Math.random().toString(36).substr(2, 9); }
 
-        // ----- MEDIA MANAGER -----
-        function addMedia(file) {
-            return new Promise((resolve) => {
-                const url = URL.createObjectURL(file);
+        // ============================================
+        // MEDIA MANAGER
+        // ============================================
+        class MediaManager {
+            constructor(state) {
+                this.state = state;
+                this.objectUrls = new Set();
+            }
+
+            async importFile(file) {
                 const type = file.type.split('/')[0];
-                const id = uuid();
-                const mediaObj = { id, name: file.name, type, url, duration: 0, width: 0, height: 0, size: file.size, element: null };
-                if (type === 'video' || type === 'audio') {
-                    const el = document.createElement(type === 'video' ? 'video' : 'audio');
-                    el.preload = 'metadata';
-                    el.src = url;
-                    el.onloadedmetadata = () => {
-                        mediaObj.duration = el.duration || 0;
-                        if (type === 'video') { mediaObj.width = el.videoWidth; mediaObj.height = el.videoHeight; }
-                        mediaObj.element = el;
-                        state.media.push(mediaObj);
-                        renderMediaLibrary();
-                        resolve(mediaObj);
-                    };
-                    el.onerror = () => { toast('Error loading media'); URL.revokeObjectURL(url); resolve(null); };
-                } else if (type === 'image') {
-                    const img = new Image();
-                    img.src = url;
-                    img.onload = () => {
-                        mediaObj.width = img.width; mediaObj.height = img.height;
-                        mediaObj.element = img;
-                        state.media.push(mediaObj);
-                        renderMediaLibrary();
-                        resolve(mediaObj);
-                    };
-                    img.onerror = () => { toast('Error loading image'); resolve(null); };
-                } else {
-                    resolve(null);
+                const id = 'media-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+                const url = URL.createObjectURL(file);
+                this.objectUrls.add(url);
+
+                const mediaObj = {
+                    id,
+                    name: file.name,
+                    type,
+                    url,
+                    duration: 0,
+                    width: 0,
+                    height: 0,
+                    size: file.size,
+                    element: null
+                };
+
+                try {
+                    if (type === 'video' || type === 'audio') {
+                        const element = document.createElement(type === 'video' ? 'video' : 'audio');
+                        element.preload = 'metadata';
+                        element.src = url;
+                        await new Promise((resolve, reject) => {
+                            element.onloadedmetadata = () => {
+                                mediaObj.duration = element.duration || 0;
+                                if (type === 'video') {
+                                    mediaObj.width = element.videoWidth;
+                                    mediaObj.height = element.videoHeight;
+                                }
+                                mediaObj.element = element;
+                                resolve();
+                            };
+                            element.onerror = () => {
+                                reject(new Error('Failed to load ' + type + ' file'));
+                            };
+                        });
+                    } else if (type === 'image') {
+                        const img = new Image();
+                        img.src = url;
+                        await new Promise((resolve, reject) => {
+                            img.onload = () => {
+                                mediaObj.width = img.width;
+                                mediaObj.height = img.height;
+                                mediaObj.element = img;
+                                resolve();
+                            };
+                            img.onerror = () => {
+                                reject(new Error('Failed to load image'));
+                            };
+                        });
+                    } else {
+                        throw new Error('Unsupported file type: ' + file.type);
+                    }
+
+                    this.state.media.push(mediaObj);
+                    return mediaObj;
+                } catch (error) {
+                    console.error('Media import error:', error);
+                    URL.revokeObjectURL(url);
+                    this.objectUrls.delete(url);
+                    throw error;
                 }
-            });
-        }
+            }
 
-        function renderMediaLibrary() {
-            const list = document.getElementById('mediaList');
-            list.innerHTML = '';
-            state.media.forEach(m => {
-                const div = document.createElement('div');
-                div.className = 'media-item';
-                div.setAttribute('data-id', m.id);
-                div.innerHTML = `
-                    ${m.type === 'video' ? '<video muted src="'+m.url+'" style="width:40px;height:40px;object-fit:cover;"></video>' : 
-                    m.type === 'image' ? '<img src="'+m.url+'" style="width:40px;height:40px;object-fit:cover;">' : 
-                    '<div style="width:40px;height:40px;background:#333;display:flex;align-items:center;justify-content:center;">🎵</div>'}
-                    <div class="media-item-info">${m.name}<br>${m.duration ? formatTime(m.duration) : ''} ${m.width? m.width+'x'+m.height:''}</div>`;
-                div.addEventListener('click', () => addClipFromMedia(m.id));
-                list.appendChild(div);
-            });
-        }
-
-        function addClipFromMedia(mediaId, track = 'video') {
-            const m = state.media.find(x => x.id === mediaId);
-            if (!m) return;
-            if (m.type === 'audio') track = 'audio';
-            const duration = m.duration || 5;
-            const clip = {
-                id: uuid(), mediaId, track, start: 0, end: duration, trimStart: 0, trimEnd: duration,
-                speed: 1, volume: 1, muted: false, fadeIn: 0, fadeOut: 0,
-                transform: { x:0, y:0, scaleX:100, scaleY:100, rotation:0, cropTop:0, cropBottom:0, cropLeft:0, cropRight:0, flipH:false, flipV:false, aspect:'original' },
-                filters: { brightness:100, contrast:100, saturation:100, exposure:100, temperature:0, tint:0, blur:0, grayscale:0, sepia:0, hue:0, opacity:100 },
-                textOverlay: null, imageOverlay: null,
-                transition: 'none', transitionDuration: 1
-            };
-            state.clips.push(clip);
-            saveHistory();
-            renderTimeline();
-            selectClip(clip.id);
-        }
-
-        // ----- HISTORY -----
-        function saveHistory() {
-            const snapshot = JSON.stringify({ clips: state.clips, playhead: state.playhead, transitions: state.transitions, textOverlays: state.textOverlays, imageOverlays: state.imageOverlays });
-            state.history = state.history.slice(0, state.historyIndex + 1);
-            state.history.push(snapshot);
-            state.historyIndex++;
-            if (state.history.length > 50) { state.history.shift(); state.historyIndex--; }
-            updateUndoRedoButtons();
-        }
-        function undo() {
-            if (state.historyIndex > 0) {
-                state.historyIndex--;
-                restoreHistory(state.history[state.historyIndex]);
+            cleanup() {
+                this.objectUrls.forEach(url => URL.revokeObjectURL(url));
+                this.objectUrls.clear();
             }
         }
-        function redo() {
-            if (state.historyIndex < state.history.length - 1) {
-                state.historyIndex++;
-                restoreHistory(state.history[state.historyIndex]);
+
+        // ============================================
+        // TIMELINE MANAGER
+        // ============================================
+        class TimelineManager {
+            constructor(state, mediaManager) {
+                this.state = state;
+                this.mediaManager = mediaManager;
+                this.pixelsPerSecond = 80;
+                this.dragState = null;
+            }
+
+            createClip(mediaId, track = 'video') {
+                const media = this.state.media.find(m => m.id === mediaId);
+                if (!media) {
+                    showToast('Media not found', 'error');
+                    return null;
+                }
+
+                if (media.type === 'audio') track = 'audio';
+
+                const duration = media.duration || 5;
+                const clip = {
+                    id: 'clip-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6),
+                    mediaId,
+                    track,
+                    timelineStart: 0,
+                    timelineDuration: duration,
+                    sourceStart: 0,
+                    sourceEnd: duration,
+                    speed: 1,
+                    volume: 1,
+                    muted: false,
+                    fadeIn: 0,
+                    fadeOut: 0,
+                    transform: {
+                        x: 0,
+                        y: 0,
+                        scaleX: 100,
+                        scaleY: 100,
+                        rotation: 0,
+                        flipH: false,
+                        flipV: false
+                    },
+                    filters: {
+                        brightness: 100,
+                        contrast: 100,
+                        saturation: 100,
+                        blur: 0,
+                        grayscale: 0,
+                        sepia: 0,
+                        hue: 0,
+                        opacity: 100
+                    }
+                };
+
+                this.state.clips.push(clip);
+                this.state.saveHistory();
+                return clip;
+            }
+
+            deleteClip(clipId) {
+                const index = this.state.clips.findIndex(c => c.id === clipId);
+                if (index === -1) return;
+                this.state.clips.splice(index, 1);
+                if (this.state.selectedClipId === clipId) {
+                    this.state.selectedClipId = null;
+                }
+                this.state.saveHistory();
+                renderTimeline();
+                renderInspector();
+                showToast('Clip deleted', 'success');
+            }
+
+            duplicateClip(clipId) {
+                const clip = this.state.getClipById(clipId);
+                if (!clip) return;
+                const copy = JSON.parse(JSON.stringify(clip));
+                copy.id = 'clip-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+                copy.timelineStart += copy.timelineDuration + 0.5;
+                this.state.clips.push(copy);
+                this.state.saveHistory();
+                renderTimeline();
+                showToast('Clip duplicated', 'success');
+                return copy;
+            }
+
+            splitClip(clipId, atTime) {
+                const clip = this.state.getClipById(clipId);
+                if (!clip) {
+                    showToast('No clip selected', 'warning');
+                    return;
+                }
+
+                const clipLocalTime = atTime - clip.timelineStart;
+                if (clipLocalTime <= 0 || clipLocalTime >= clip.timelineDuration) {
+                    showToast('Playhead must be inside clip to split', 'warning');
+                    return;
+                }
+
+                const sourcePosition = clip.sourceStart + (clipLocalTime * clip.speed);
+                const firstClip = { ...clip, id: 'clip-' + Date.now() + '-a', timelineDuration: clipLocalTime, sourceEnd: sourcePosition };
+                const secondClip = { ...clip, id: 'clip-' + Date.now() + '-b', timelineStart: atTime, timelineDuration: clip.timelineDuration - clipLocalTime, sourceStart: sourcePosition };
+
+                const index = this.state.clips.findIndex(c => c.id === clipId);
+                this.state.clips.splice(index, 1, firstClip, secondClip);
+                this.state.saveHistory();
+                renderTimeline();
+                renderInspector();
+                showToast('Clip split', 'success');
+                return [firstClip, secondClip];
+            }
+
+            applyTrim(clipId, sourceStart, sourceEnd) {
+                const clip = this.state.getClipById(clipId);
+                if (!clip) return;
+                const media = this.state.media.find(m => m.id === clip.mediaId);
+                if (!media) return;
+
+                sourceStart = Math.max(0, Math.min(sourceStart, media.duration));
+                sourceEnd = Math.max(sourceStart + 0.1, Math.min(sourceEnd, media.duration));
+                clip.sourceStart = sourceStart;
+                clip.sourceEnd = sourceEnd;
+                clip.timelineDuration = (sourceEnd - sourceStart) / clip.speed;
+                this.state.saveHistory();
+                renderTimeline();
+                renderInspector();
+                showToast('Trim applied', 'success');
+            }
+
+            resetTrim(clipId) {
+                const clip = this.state.getClipById(clipId);
+                if (!clip) return;
+                const media = this.state.media.find(m => m.id === clip.mediaId);
+                if (!media) return;
+                clip.sourceStart = 0;
+                clip.sourceEnd = media.duration || 5;
+                clip.timelineDuration = (clip.sourceEnd - clip.sourceStart) / clip.speed;
+                this.state.saveHistory();
+                renderTimeline();
+                renderInspector();
+                showToast('Trim reset', 'success');
+            }
+
+            moveClipToTrack(clipId, newTrack) {
+                const clip = this.state.getClipById(clipId);
+                if (!clip) return;
+                clip.track = newTrack;
+                this.state.saveHistory();
+                renderTimeline();
             }
         }
-        function restoreHistory(snapshot) {
-            const data = JSON.parse(snapshot);
-            state.clips = data.clips;
-            state.playhead = data.playhead;
-            state.transitions = data.transitions || [];
-            state.textOverlays = data.textOverlays || [];
-            state.imageOverlays = data.imageOverlays || [];
-            renderTimeline();
-            updatePlayheadUI();
-            selectClip(state.selectedClipId);
-            updateUndoRedoButtons();
-        }
-        function updateUndoRedoButtons() {
-            document.getElementById('btnUndo').disabled = state.historyIndex <= 0;
-            document.getElementById('btnRedo').disabled = state.historyIndex >= state.history.length - 1;
+
+        // ============================================
+        // PREVIEW MANAGER
+        // ============================================
+        class PreviewManager {
+            constructor(state) {
+                this.state = state;
+                this.canvas = document.getElementById('previewCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.animationFrameId = null;
+            }
+
+            start() {
+                this.state.playing = true;
+                document.getElementById('btnPlayPause').textContent = '⏸️';
+                this.loop();
+            }
+
+            pause() {
+                this.state.playing = false;
+                document.getElementById('btnPlayPause').textContent = '▶️';
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                    this.animationFrameId = null;
+                }
+            }
+
+            toggle() {
+                if (this.state.playing) {
+                    this.pause();
+                } else {
+                    this.start();
+                }
+            }
+
+            loop() {
+                if (!this.state.playing) return;
+                const speed = parseFloat(document.getElementById('playbackSpeed').value) || 1;
+                this.state.playhead += (1 / 60) * speed;
+                const total = this.state.totalDuration;
+                if (this.state.playhead >= total) {
+                    this.state.playhead = 0;
+                }
+                updatePlayheadUI();
+                this.render();
+                this.animationFrameId = requestAnimationFrame(() => this.loop());
+            }
+
+            render() {
+                const container = document.getElementById('previewContainer');
+                const containerWidth = container.clientWidth - 24;
+                const containerHeight = container.clientHeight - 24;
+                this.canvas.width = containerWidth;
+                this.canvas.height = containerHeight;
+
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                const playhead = this.state.playhead;
+                const clips = this.state.clips.filter(c => {
+                    return c.track === 'video' && playhead >= c.timelineStart && playhead <= c.timelineStart + c.timelineDuration;
+                });
+
+                if (clips.length > 0) {
+                    const clip = clips[0];
+                    const media = this.state.media.find(m => m.id === clip.mediaId);
+                    if (media && media.element) {
+                        const localTime = clip.sourceStart + ((playhead - clip.timelineStart) * clip.speed);
+                        const element = media.element;
+
+                        let sourceX = 0;
+                        let sourceY = 0;
+                        let sourceWidth = media.width || element.videoWidth || 100;
+                        let sourceHeight = media.height || element.videoHeight || 100;
+
+                        if (media.type === 'video' && element.readyState >= 2) {
+                            element.currentTime = Math.min(localTime, element.duration || localTime);
+                        }
+
+                        this.ctx.save();
+                        this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
+                        this.ctx.translate(clip.transform.x, clip.transform.y);
+                        this.ctx.rotate((clip.transform.rotation || 0) * Math.PI / 180);
+                        const scaleX = (clip.transform.scaleX || 100) / 100;
+                        const scaleY = (clip.transform.scaleY || 100) / 100;
+                        this.ctx.scale(scaleX, scaleY);
+                        if (clip.transform.flipH) this.ctx.scale(-1, 1);
+                        if (clip.transform.flipV) this.ctx.scale(1, -1);
+
+                        const drawWidth = this.canvas.width * scaleX;
+                        const drawHeight = this.canvas.height * scaleY;
+
+                        this.ctx.filter = this.buildFilterString(clip.filters);
+                        this.ctx.drawImage(element, sourceX, sourceY, sourceWidth, sourceHeight, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight);
+                        this.ctx.restore();
+                        this.ctx.filter = 'none';
+                    }
+                }
+
+                // Draw text overlays
+                this.state.textOverlays.forEach(textOverlay => {
+                    if (playhead >= textOverlay.start && playhead <= textOverlay.end) {
+                        this.ctx.save();
+                        this.ctx.font = `${textOverlay.fontWeight || 'normal'} ${textOverlay.fontSize || 24}px ${textOverlay.fontFamily || 'Arial'}`;
+                        this.ctx.fillStyle = textOverlay.color || 'white';
+                        this.ctx.textAlign = textOverlay.alignment || 'center';
+                        this.ctx.textBaseline = 'middle';
+                        this.ctx.fillText(textOverlay.text, textOverlay.x, textOverlay.y);
+                        this.ctx.restore();
+                    }
+                });
+
+                // Draw image overlays
+                this.state.imageOverlays.forEach(overlay => {
+                    if (playhead >= overlay.start && playhead <= overlay.end) {
+                        const media = this.state.media.find(m => m.id === overlay.mediaId);
+                        if (media && media.element) {
+                            this.ctx.save();
+                            this.ctx.globalAlpha = overlay.opacity || 1;
+                            this.ctx.translate(overlay.x, overlay.y);
+                            this.ctx.rotate((overlay.rotation || 0) * Math.PI / 180);
+                            this.ctx.scale(overlay.scale || 1, overlay.scale || 1);
+                            this.ctx.drawImage(media.element, -50, -50, 100, 100);
+                            this.ctx.restore();
+                        }
+                    }
+                });
+            }
+
+            buildFilterString(filters) {
+                const f = filters || {};
+                let filterString = '';
+                if (f.brightness && f.brightness !== 100) filterString += `brightness(${f.brightness}%) `;
+                if (f.contrast && f.contrast !== 100) filterString += `contrast(${f.contrast}%) `;
+                if (f.saturation && f.saturation !== 100) filterString += `saturate(${f.saturation}%) `;
+                if (f.blur) filterString += `blur(${f.blur}px) `;
+                if (f.grayscale) filterString += `grayscale(${f.grayscale}%) `;
+                if (f.sepia) filterString += `sepia(${f.sepia}%) `;
+                if (f.hue) filterString += `hue-rotate(${f.hue}deg) `;
+                if (f.opacity && f.opacity !== 100) filterString += `opacity(${f.opacity}%) `;
+                return filterString.trim() || 'none';
+            }
         }
 
-        // ----- TIMELINE RENDERING -----
-        let pixelsPerSecond = 80;
+        // ============================================
+        // EXPORT MANAGER
+        // ============================================
+        class ExportManager {
+            constructor(state, previewManager) {
+                this.state = state;
+                this.previewManager = previewManager;
+                this.exporting = false;
+                this.cancelRequested = false;
+            }
+
+            async export() {
+                if (this.exporting) return;
+                if (this.state.totalDuration <= 0) {
+                    showToast('Timeline is empty. Add media before exporting.', 'error');
+                    return;
+                }
+
+                if (!window.MediaRecorder) {
+                    showToast('MediaRecorder API not supported in this browser. Cannot export.', 'error');
+                    return;
+                }
+
+                this.exporting = true;
+                this.cancelRequested = false;
+                document.getElementById('btnStartExport').disabled = true;
+                document.getElementById('exportProgressDisplay').textContent = 'Preparing export...';
+
+                const canvas = this.previewManager.canvas;
+                const fps = parseInt(document.getElementById('exportFps').value) || 30;
+                const quality = document.getElementById('exportQuality').value;
+                const videoBitrate = quality === 'high' ? 8000000 : quality === 'medium' ? 4000000 : 2000000;
+
+                try {
+                    const stream = canvas.captureStream(fps);
+                    const recorder = new MediaRecorder(stream, {
+                        mimeType: 'video/webm',
+                        videoBitsPerSecond: videoBitrate
+                    });
+
+                    const chunks = [];
+                    recorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) chunks.push(event.data);
+                    };
+
+                    recorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: 'video/webm' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'export.webm';
+                        a.click();
+                        setTimeout(() => URL.revokeObjectURL(url), 5000);
+                        document.getElementById('exportProgressDisplay').textContent = 'Export complete!';
+                        this.exporting = false;
+                        document.getElementById('btnStartExport').disabled = false;
+                        showToast('Export complete', 'success');
+                        document.getElementById('exportModal').classList.add('hidden');
+                    };
+
+                    recorder.onerror = (error) => {
+                        console.error('Export error:', error);
+                        this.exporting = false;
+                        document.getElementById('btnStartExport').disabled = false;
+                        showToast('Export failed: ' + error.message, 'error');
+                        document.getElementById('exportModal').classList.add('hidden');
+                    };
+
+                    recorder.start(100);
+                    const totalDuration = this.state.totalDuration;
+                    const startTime = performance.now();
+                    const originalPlayhead = this.state.playhead;
+
+                    const exportLoop = () => {
+                        if (this.cancelRequested) {
+                            recorder.stop();
+                            this.exporting = false;
+                            document.getElementById('btnStartExport').disabled = false;
+                            showToast('Export cancelled', 'warning');
+                            document.getElementById('exportModal').classList.add('hidden');
+                            this.state.playhead = originalPlayhead;
+                            this.previewManager.render();
+                            return;
+                        }
+
+                        const elapsed = (performance.now() - startTime) / 1000;
+                        this.state.playhead = Math.min(elapsed, totalDuration);
+                        this.previewManager.render();
+                        updatePlayheadUI();
+
+                        const progress = Math.min(100, (this.state.playhead / totalDuration) * 100);
+                        document.getElementById('exportProgressDisplay').textContent = `Exporting... ${progress.toFixed(1)}%`;
+
+                        if (this.state.playhead < totalDuration) {
+                            requestAnimationFrame(exportLoop);
+                        } else {
+                            recorder.stop();
+                            this.state.playhead = originalPlayhead;
+                            this.previewManager.render();
+                        }
+                    };
+
+                    requestAnimationFrame(exportLoop);
+                } catch (error) {
+                    console.error('Export setup error:', error);
+                    this.exporting = false;
+                    document.getElementById('btnStartExport').disabled = false;
+                    showToast('Export failed: ' + error.message, 'error');
+                    document.getElementById('exportModal').classList.add('hidden');
+                }
+            }
+
+            cancel() {
+                this.cancelRequested = true;
+            }
+        }
+
+        // ============================================
+        // GLOBAL INSTANCES
+        // ============================================
+        const state = new EditorState();
+        const mediaManager = new MediaManager(state);
+        const timelineManager = new TimelineManager(state, mediaManager);
+        const previewManager = new PreviewManager(state);
+        const exportManager = new ExportManager(state, previewManager);
+
+        // ============================================
+        // TOAST NOTIFICATIONS
+        // ============================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('removing');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        // ============================================
+        // RENDER FUNCTIONS
+        // ============================================
         function renderTimeline() {
-            const rulerInner = document.getElementById('rulerInner');
-            const videoTrackClips = document.getElementById('videoTrackClips');
-            const audioTrackClips = document.getElementById('audioTrackClips');
+            const rulerInner = document.getElementById('timelineRulerInner');
+            const videoTrackClips = document.getElementById('track-video');
+            const audioTrackClips = document.getElementById('track-audio');
+
             rulerInner.innerHTML = '';
             videoTrackClips.innerHTML = '';
             audioTrackClips.innerHTML = '';
 
-            const totalDuration = getTimelineDuration();
-            const totalWidth = Math.max(totalDuration * pixelsPerSecond + 100, 2000);
+            const totalDuration = state.totalDuration;
+            const pixelsPerSecond = timelineManager.pixelsPerSecond * state.zoom;
+            const totalWidth = Math.max(totalDuration * pixelsPerSecond + 200, 2000);
             rulerInner.style.width = totalWidth + 'px';
             videoTrackClips.style.width = totalWidth + 'px';
             audioTrackClips.style.width = totalWidth + 'px';
@@ -839,415 +1870,840 @@
             for (let t = 0; t <= totalDuration + step; t += step) {
                 const mark = document.createElement('div');
                 mark.className = 'ruler-mark';
-                mark.style.position = 'absolute';
                 mark.style.left = (t * pixelsPerSecond) + 'px';
-                mark.textContent = formatTime(t).substring(0,8);
+                mark.textContent = formatTime(t).substring(0, 8);
                 rulerInner.appendChild(mark);
             }
 
+            // Render clips
             state.clips.forEach(clip => {
                 const trackEl = clip.track === 'video' ? videoTrackClips : audioTrackClips;
                 const el = document.createElement('div');
-                el.className = 'clip' + (clip.id === state.selectedClipId ? ' selected' : '') + (clip.track === 'audio' ? ' audio-clip' : '');
-                el.style.left = (clip.start * pixelsPerSecond) + 'px';
-                const clipDuration = (clip.end - clip.start) * (1/clip.speed);
-                el.style.width = Math.max(clipDuration * pixelsPerSecond, 20) + 'px';
+                el.className = 'clip-block' + (clip.id === state.selectedClipId ? ' selected' : '') + (clip.track === 'audio' ? ' audio-clip' : '');
+                el.style.left = (clip.timelineStart * pixelsPerSecond) + 'px';
+                el.style.width = Math.max(clip.timelineDuration * pixelsPerSecond, 20) + 'px';
+                el.dataset.clipId = clip.id;
+                el.title = `${clip.mediaId} - ${formatTime(clip.timelineDuration)}`;
+
                 const media = state.media.find(m => m.id === clip.mediaId);
-                if (media && media.type === 'video') el.innerHTML = '<img src="'+media.url+'">';
-                else if (media && media.type === 'image') el.innerHTML = '<img src="'+media.url+'">';
-                else el.textContent = media ? media.name.substring(0,15) : 'Clip';
-                el.addEventListener('click', (e) => { e.stopPropagation(); selectClip(clip.id); });
-                el.addEventListener('mousedown', (e) => startDragClip(e, clip.id));
+                if (media && media.type === 'video') {
+                    el.innerHTML = `<span style="font-size:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${media.name}</span>`;
+                } else if (media && media.type === 'image') {
+                    el.innerHTML = `<span style="font-size:9px;">🖼️ ${media.name}</span>`;
+                } else if (media && media.type === 'audio') {
+                    el.innerHTML = `<span style="font-size:9px;">🎵 ${media.name}</span>`;
+                }
+
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    state.selectedClipId = clip.id;
+                    renderTimeline();
+                    renderInspector();
+                });
+
+                el.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    startDragClip(e, clip.id);
+                });
+
                 trackEl.appendChild(el);
             });
 
-            // Playhead position
             updatePlayheadUI();
         }
 
-        function getTimelineDuration() {
-            let maxEnd = 0;
-            state.clips.forEach(c => { const end = c.end; if (end > maxEnd) maxEnd = end; });
-            return maxEnd || 30;
+        function renderInspector() {
+            const clip = state.getSelectedClip();
+            const clipInfoDisplay = document.getElementById('clipInfoDisplay');
+
+            if (!clip) {
+                clipInfoDisplay.textContent = 'No clip selected';
+                return;
+            }
+
+            const media = state.media.find(m => m.id === clip.mediaId);
+            clipInfoDisplay.textContent = `${media ? media.name : 'Unknown'} | ${clip.track} | ${formatTime(clip.timelineDuration)}`;
+
+            document.getElementById('trimStartInput').value = clip.sourceStart.toFixed(2);
+            document.getElementById('trimEndInput').value = clip.sourceEnd.toFixed(2);
+            document.getElementById('clipSpeedSelect').value = clip.speed;
+            document.getElementById('speedResultDuration').textContent = `Resulting duration: ${formatTime(clip.timelineDuration)}`;
+            document.getElementById('clipVolume').value = clip.volume;
+            document.getElementById('clipVolumeVal').textContent = Math.round(clip.volume * 100) + '%';
+            document.getElementById('fadeInInput').value = clip.fadeIn;
+            document.getElementById('fadeOutInput').value = clip.fadeOut;
+
+            document.getElementById('transformX').value = clip.transform.x;
+            document.getElementById('transformXVal').textContent = clip.transform.x;
+            document.getElementById('transformY').value = clip.transform.y;
+            document.getElementById('transformYVal').textContent = clip.transform.y;
+            document.getElementById('transformScaleX').value = clip.transform.scaleX;
+            document.getElementById('transformScaleXVal').textContent = clip.transform.scaleX + '%';
+            document.getElementById('transformScaleY').value = clip.transform.scaleY;
+            document.getElementById('transformScaleYVal').textContent = clip.transform.scaleY + '%';
+            document.getElementById('transformRotation').value = clip.transform.rotation;
+            document.getElementById('transformRotationVal').textContent = clip.transform.rotation + '°';
+            document.getElementById('transformFlipH').checked = clip.transform.flipH;
+            document.getElementById('transformFlipV').checked = clip.transform.flipV;
+
+            document.getElementById('filterBrightness').value = clip.filters.brightness;
+            document.getElementById('filterBrightnessVal').textContent = clip.filters.brightness;
+            document.getElementById('filterContrast').value = clip.filters.contrast;
+            document.getElementById('filterContrastVal').textContent = clip.filters.contrast;
+            document.getElementById('filterSaturation').value = clip.filters.saturation;
+            document.getElementById('filterSaturationVal').textContent = clip.filters.saturation;
+            document.getElementById('filterBlur').value = clip.filters.blur;
+            document.getElementById('filterBlurVal').textContent = clip.filters.blur;
+            document.getElementById('filterGrayscale').value = clip.filters.grayscale;
+            document.getElementById('filterGrayscaleVal').textContent = clip.filters.grayscale + '%';
+            document.getElementById('filterSepia').value = clip.filters.sepia;
+            document.getElementById('filterSepiaVal').textContent = clip.filters.sepia + '%';
+            document.getElementById('filterHue').value = clip.filters.hue;
+            document.getElementById('filterHueVal').textContent = clip.filters.hue + '°';
+            document.getElementById('filterOpacity').value = clip.filters.opacity;
+            document.getElementById('filterOpacityVal').textContent = clip.filters.opacity + '%';
+        }
+
+        function renderMediaLibrary() {
+            const library = document.getElementById('mediaLibrary');
+            library.innerHTML = '';
+
+            if (state.media.length === 0) {
+                library.innerHTML = '<div class="empty-state"><div class="icon">📁</div><p>No media imported</p><p style="font-size:11px;">Click Import Media or drop files</p></div>';
+                return;
+            }
+
+            state.media.forEach(media => {
+                const item = document.createElement('div');
+                item.className = 'media-item';
+                item.dataset.mediaId = media.id;
+                item.innerHTML = `
+                    <div style="width:36px;height:36px;background:#000;border-radius:3px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+                        ${media.type === 'video' ? '<span style="font-size:18px;">🎬</span>' : media.type === 'audio' ? '<span style="font-size:18px;">🎵</span>' : '<span style="font-size:18px;">🖼️</span>'}
+                    </div>
+                    <div class="media-item-info">
+                        <div class="media-item-name">${media.name}</div>
+                        <div class="media-item-meta">${media.type} · ${media.duration ? formatTime(media.duration) : media.width + 'x' + media.height}</div>
+                    </div>
+                `;
+                item.addEventListener('click', () => {
+                    const track = media.type === 'audio' ? 'audio' : 'video';
+                    const clip = timelineManager.createClip(media.id, track);
+                    if (clip) {
+                        renderTimeline();
+                        renderInspector();
+                        showToast(`Added ${media.name} to ${track} track`, 'success');
+                    }
+                });
+                library.appendChild(item);
+            });
         }
 
         function updatePlayheadUI() {
             const playhead = document.getElementById('playhead');
-            const left = 100 + state.playhead * pixelsPerSecond;
-            playhead.style.left = left + 'px';
+            const pixelsPerSecond = timelineManager.pixelsPerSecond * state.zoom;
+            playhead.style.left = (state.playhead * pixelsPerSecond) + 'px';
+
             document.getElementById('timelinePlayheadDisplay').textContent = formatTime(state.playhead);
             document.getElementById('currentTimeDisplay').textContent = formatTime(state.playhead);
-            const total = getTimelineDuration();
-            document.getElementById('totalTimeDisplay').textContent = formatTime(total);
-            const progress = total > 0 ? (state.playhead / total) * 100 : 0;
+            document.getElementById('totalTimeDisplay').textContent = formatTime(state.totalDuration);
+
+            const progress = state.totalDuration > 0 ? (state.playhead / state.totalDuration) * 100 : 0;
             document.getElementById('progressBar').value = progress;
         }
 
-        // ----- CLIP SELECTION -----
-        function selectClip(id) {
-            state.selectedClipId = id;
-            const clip = state.clips.find(c => c.id === id);
-            if (clip) {
-                document.getElementById('clipInfo').textContent = `Clip: ${clip.track} | ${formatTime(clip.end - clip.start)}`;
-                document.getElementById('trimInInput').value = clip.trimStart;
-                document.getElementById('trimOutInput').value = clip.trimEnd;
-                document.getElementById('clipSpeed').value = clip.speed;
-                document.getElementById('resultingDuration').textContent = `Resulting: ${formatTime((clip.end-clip.start)*(1/clip.speed))}`;
-                document.getElementById('clipVolume').value = clip.volume;
-                document.getElementById('fadeInInput').value = clip.fadeIn;
-                document.getElementById('fadeOutInput').value = clip.fadeOut;
-                document.getElementById('posX').value = clip.transform.x;
-                document.getElementById('posY').value = clip.transform.y;
-                document.getElementById('scaleW').value = clip.transform.scaleX;
-                document.getElementById('scaleH').value = clip.transform.scaleY;
-                document.getElementById('rotation').value = clip.transform.rotation;
-                document.getElementById('cropTop').value = clip.transform.cropTop;
-                document.getElementById('cropBottom').value = clip.transform.cropBottom;
-                document.getElementById('cropLeft').value = clip.transform.cropLeft;
-                document.getElementById('cropRight').value = clip.transform.cropRight;
-                document.getElementById('flipH').checked = clip.transform.flipH;
-                document.getElementById('flipV').checked = clip.transform.flipV;
-                document.getElementById('aspectPreset').value = clip.transform.aspect;
-                document.getElementById('filterBrightness').value = clip.filters.brightness;
-                document.getElementById('filterContrast').value = clip.filters.contrast;
-                document.getElementById('filterSaturation').value = clip.filters.saturation;
-                document.getElementById('filterExposure').value = clip.filters.exposure;
-                document.getElementById('filterTemperature').value = clip.filters.temperature;
-                document.getElementById('filterTint').value = clip.filters.tint;
-                document.getElementById('filterBlur').value = clip.filters.blur;
-                document.getElementById('filterGrayscale').value = clip.filters.grayscale;
-                document.getElementById('filterSepia').value = clip.filters.sepia;
-                document.getElementById('filterHue').value = clip.filters.hue;
-                document.getElementById('filterOpacity').value = clip.filters.opacity;
-                document.getElementById('transitionSelect').value = clip.transition || 'none';
-                document.getElementById('transitionDuration').value = clip.transitionDuration || 1;
-            } else {
-                document.getElementById('clipInfo').textContent = 'No clip selected';
-            }
-            renderTimeline();
+        function updateUndoRedoButtons() {
+            document.getElementById('btnUndo').disabled = state.undoStack.length === 0;
+            document.getElementById('btnRedo').disabled = state.redoStack.length === 0;
         }
 
-        // ----- DRAG & DROP CLIPS -----
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        function formatTime(seconds) {
+            if (!isFinite(seconds) || seconds < 0) seconds = 0;
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            const ms = Math.floor((seconds % 1) * 100);
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
+        }
+
         function startDragClip(e, clipId) {
-            e.preventDefault();
-            const clip = state.clips.find(c => c.id === clipId);
+            const clip = state.getClipById(clipId);
             if (!clip) return;
-            const trackEl = document.getElementById(clip.track + 'TrackClips');
+
+            e.preventDefault();
+            const trackEl = document.getElementById('track-' + clip.track);
             const rect = trackEl.getBoundingClientRect();
+            const pixelsPerSecond = timelineManager.pixelsPerSecond * state.zoom;
             const startX = e.clientX;
-            const originalStart = clip.start;
-            const move = (ev) => {
+            const originalStart = clip.timelineStart;
+
+            const onMove = (ev) => {
                 const dx = (ev.clientX - startX) / pixelsPerSecond;
                 let newStart = Math.max(0, originalStart + dx);
-                if (state.snap) newStart = Math.round(newStart * 10) / 10;
-                clip.start = newStart;
+                if (state.snapEnabled) {
+                    newStart = Math.round(newStart * 10) / 10;
+                }
+                clip.timelineStart = newStart;
                 renderTimeline();
+                renderInspector();
             };
-            const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); saveHistory(); };
-            window.addEventListener('mousemove', move);
-            window.addEventListener('mouseup', up);
+
+            const onUp = () => {
+                window.removeEventListener('mousemove', onMove);
+                window.removeEventListener('mouseup', onUp);
+                state.saveHistory();
+            };
+
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('mouseup', onUp);
         }
 
-        // ----- PLAYBACK -----
-        let animationFrame;
-        function updatePlayback() {
-            if (state.playing) {
-                const speed = parseFloat(document.getElementById('playbackSpeed').value);
-                state.playhead += 0.033 * speed;
-                const total = getTimelineDuration();
-                if (state.playhead >= total) { state.playhead = 0; }
-                updatePlayheadUI();
-                drawPreview();
-                animationFrame = requestAnimationFrame(updatePlayback);
-            }
-        }
-        function togglePlay() {
-            state.playing = !state.playing;
-            document.getElementById('btnPlayPause').textContent = state.playing ? '⏸️ Pause' : '▶️ Play';
-            if (state.playing) updatePlayback(); else cancelAnimationFrame(animationFrame);
-        }
-
-        // ----- PREVIEW DRAWING -----
-        const canvas = document.getElementById('previewCanvas');
-        const ctx = canvas.getContext('2d');
-        function drawPreview() {
-            const wrap = document.getElementById('previewCanvasWrap');
-            const w = wrap.clientWidth - 20, h = wrap.clientHeight - 20;
-            canvas.width = w; canvas.height = h;
-            ctx.fillStyle = '#000'; ctx.fillRect(0,0,w,h);
-
-            const activeClips = state.clips.filter(c => c.track === 'video' && state.playhead >= c.start && state.playhead <= c.end);
-            if (activeClips.length > 0) {
-                const clip = activeClips[0];
-                const media = state.media.find(m => m.id === clip.mediaId);
-                if (media && media.element) {
-                    const el = media.element;
-                    const localTime = (state.playhead - clip.start) * clip.speed + clip.trimStart;
-                    let sx=0, sy=0, sw=el.videoWidth||el.width, sh=el.videoHeight||el.height;
-                    if (clip.transform.cropLeft) sx += sw*clip.transform.cropLeft/100;
-                    if (clip.transform.cropTop) sy += sh*clip.transform.cropTop/100;
-                    if (clip.transform.cropRight) sw *= (1-clip.transform.cropRight/100);
-                    if (clip.transform.cropBottom) sh *= (1-clip.transform.cropBottom/100);
-                    ctx.save();
-                    ctx.translate(w/2 + clip.transform.x, h/2 + clip.transform.y);
-                    ctx.rotate(clip.transform.rotation * Math.PI/180);
-                    const scaleX = clip.transform.scaleX/100, scaleY = clip.transform.scaleY/100;
-                    ctx.scale(scaleX, scaleY);
-                    if (clip.transform.flipH) ctx.scale(-1,1);
-                    if (clip.transform.flipV) ctx.scale(1,-1);
-                    const drawW = w * scaleX, drawH = h * scaleY;
-                    try {
-                        if (media.type === 'video' && el.readyState >= 2) {
-                            el.currentTime = Math.min(localTime, el.duration || 0);
-                            ctx.drawImage(el, sx, sy, sw, sh, -drawW/2, -drawH/2, drawW, drawH);
-                        } else if (media.type === 'image') {
-                            ctx.drawImage(el, sx, sy, sw, sh, -drawW/2, -drawH/2, drawW, drawH);
-                        }
-                    } catch(e) {}
-                    // filters simulation
-                    ctx.filter = `brightness(${clip.filters.brightness}%) contrast(${clip.filters.contrast}%) saturate(${clip.filters.saturation}%) blur(${clip.filters.blur}px) grayscale(${clip.filters.grayscale}%) sepia(${clip.filters.sepia}%) hue-rotate(${clip.filters.hue}deg) opacity(${clip.filters.opacity}%)`;
-                    ctx.restore();
-                }
-            }
-            // draw text overlays
-            state.textOverlays.forEach(t => {
-                if (state.playhead >= t.start && state.playhead <= t.end) {
-                    ctx.save();
-                    ctx.font = `${t.fontWeight} ${t.fontSize}px ${t.fontFamily}`;
-                    ctx.fillStyle = t.color;
-                    ctx.textAlign = t.alignment;
-                    ctx.globalAlpha = t.backgroundOpacity;
-                    if (t.backgroundColor) { ctx.fillStyle = t.backgroundColor; ctx.fillRect(t.x-ctx.measureText(t.text).width/2, t.y-t.fontSize/2, ctx.measureText(t.text).width, t.fontSize); }
-                    ctx.fillStyle = t.color; ctx.globalAlpha = 1;
-                    ctx.fillText(t.text, t.x, t.y);
-                    ctx.restore();
-                }
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        function initializeEventListeners() {
+            // Sidebar tabs
+            document.querySelectorAll('.sidebar-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.querySelectorAll('.sidebar-content').forEach(c => c.classList.add('hidden'));
+                    document.getElementById('sidebar-' + tab.dataset.tab).classList.remove('hidden');
+                });
             });
-        }
 
-        // ----- EXPORT -----
-        function startExport() {
-            const total = getTimelineDuration();
-            if (total <= 0) { toast('Timeline empty'); return; }
-            const modal = document.getElementById('exportModal');
-            const progress = document.getElementById('exportProgress');
-            const canvasStream = canvas.captureStream(30);
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const dest = audioCtx.createMediaStreamDestination();
-            const mediaRecorder = new MediaRecorder(canvasStream, { mimeType: 'video/webm' });
-            const chunks = [];
-            mediaRecorder.ondataavailable = e => chunks.push(e.data);
-            mediaRecorder.onstop = () => {
-                const blob = new Blob(chunks, {type: 'video/webm'});
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a'); a.href = url; a.download = 'export.webm'; a.click();
-                toast('Export complete');
-                progress.textContent = '';
-                modal.style.display = 'none';
-            };
-            mediaRecorder.start();
-            let t = 0;
-            const step = 0.033;
-            const interval = setInterval(() => {
-                state.playhead = t; drawPreview(); t += step;
-                progress.textContent = `Exporting... ${Math.round(t/total*100)}%`;
-                if (t >= total) { clearInterval(interval); mediaRecorder.stop(); }
-            }, step*1000);
-            window.currentExportCancel = () => { clearInterval(interval); mediaRecorder.stop(); progress.textContent='Cancelled'; modal.style.display='none'; };
-            modal.style.display = 'flex';
-        }
-
-        // ----- EVENT WIRING -----
-        function init() {
-            // Panel tabs
-            document.querySelectorAll('.panel-tabs').forEach(tabs => {
-                tabs.querySelectorAll('.panel-tab').forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        tabs.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
-                        tab.classList.add('active');
-                        const parent = tabs.parentElement;
-                        const contentMap = { media:'mediaLibrary', audio:'audioLibrary', text:'textLibrary', elements:'elementsLibrary', transitions:'transitionsLibrary', basic:'basicTab', video:'videoTab', audio:'audioTab', transform:'transformTab', filters:'filtersTab' };
-                        Object.values(contentMap).forEach(id => { const el = document.getElementById(id); if(el) el.style.display='none'; });
-                        const targetId = contentMap[tab.dataset.tab];
-                        if (targetId) document.getElementById(targetId).style.display = 'flex';
-                        if (tabs.parentElement.classList.contains('right-panel')) {
-                            ['videoTab','audioTab','transformTab','filtersTab','basicTab'].forEach(id => document.getElementById(id).style.display='none');
-                            document.getElementById(targetId).style.display = 'flex';
-                        } else {
-                            ['mediaLibrary','audioLibrary','textLibrary','elementsLibrary','transitionsLibrary'].forEach(id => document.getElementById(id).style.display='none');
-                            document.getElementById(targetId).style.display = 'flex';
-                        }
-                    });
+            // Inspector tabs
+            document.querySelectorAll('.inspector-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.inspector-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.querySelectorAll('.inspector-content').forEach(c => c.classList.add('hidden'));
+                    document.getElementById('inspector-' + tab.dataset.tab).classList.remove('hidden');
                 });
             });
 
             // Media import
-            document.getElementById('btnImportMedia').addEventListener('click', () => document.getElementById('fileInput').click());
-            document.getElementById('fileInput').addEventListener('change', async (e) => {
-                for (const file of e.target.files) await addMedia(file);
-                saveHistory();
+            document.getElementById('btnImportMedia').addEventListener('click', () => {
+                document.getElementById('fileInput').click();
             });
-            document.getElementById('btnAddExternalAudio').addEventListener('click', () => document.getElementById('audioFileInput').click());
-            document.getElementById('audioFileInput').addEventListener('change', async (e) => { for(const f of e.target.files) await addMedia(f); });
-            document.getElementById('btnAddImageOverlay').addEventListener('click', () => document.getElementById('imageOverlayInput').click());
-            document.getElementById('imageOverlayInput').addEventListener('change', async (e) => { for(const f of e.target.files) await addMedia(f); });
+
+            document.getElementById('fileInput').addEventListener('change', async (e) => {
+                const files = Array.from(e.target.files);
+                if (files.length === 0) return;
+                try {
+                    for (const file of files) {
+                        const media = await mediaManager.importFile(file);
+                        if (media) showToast(`Imported ${media.name}`, 'success');
+                    }
+                    renderMediaLibrary();
+                    state.saveHistory();
+                } catch (error) {
+                    showToast(error.message, 'error');
+                }
+                e.target.value = '';
+            });
+
+            // Audio import
+            document.getElementById('btnAddAudio').addEventListener('click', () => {
+                document.getElementById('audioFileInput').click();
+            });
+
+            document.getElementById('audioFileInput').addEventListener('change', async (e) => {
+                const files = Array.from(e.target.files);
+                for (const file of files) {
+                    try {
+                        const media = await mediaManager.importFile(file);
+                        if (media) {
+                            const clip = timelineManager.createClip(media.id, 'audio');
+                            if (clip) showToast(`Added ${media.name} to audio track`, 'success');
+                        }
+                    } catch (error) {
+                        showToast(error.message, 'error');
+                    }
+                }
+                renderMediaLibrary();
+                renderTimeline();
+                e.target.value = '';
+            });
+
+            // Image overlay import
+            document.getElementById('btnAddImageOverlay').addEventListener('click', () => {
+                document.getElementById('imageOverlayInput').click();
+            });
+
+            document.getElementById('imageOverlayInput').addEventListener('change', async (e) => {
+                const files = Array.from(e.target.files);
+                for (const file of files) {
+                    try {
+                        const media = await mediaManager.importFile(file);
+                        if (media) {
+                            state.imageOverlays.push({
+                                id: 'overlay-' + Date.now(),
+                                mediaId: media.id,
+                                start: state.playhead,
+                                end: state.playhead + 5,
+                                x: previewManager.canvas.width / 2,
+                                y: previewManager.canvas.height / 2,
+                                scale: 1,
+                                rotation: 0,
+                                opacity: 1
+                            });
+                            showToast('Image overlay added', 'success');
+                        }
+                    } catch (error) {
+                        showToast(error.message, 'error');
+                    }
+                }
+                renderMediaLibrary();
+                state.saveHistory();
+                renderPreview();
+                e.target.value = '';
+            });
 
             // Drag and drop
-            document.getElementById('centerPreview').addEventListener('dragover', e => { e.preventDefault(); document.getElementById('dropOverlay').classList.add('active'); });
-            document.getElementById('centerPreview').addEventListener('dragleave', () => document.getElementById('dropOverlay').classList.remove('active'));
-            document.getElementById('centerPreview').addEventListener('drop', async e => {
-                e.preventDefault(); document.getElementById('dropOverlay').classList.remove('active');
-                for(const f of e.dataTransfer.files) await addMedia(f);
-                saveHistory();
+            const dropOverlay = document.getElementById('dropOverlay');
+            document.getElementById('previewContainer').addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropOverlay.classList.add('active');
+            });
+
+            document.getElementById('previewContainer').addEventListener('dragleave', () => {
+                dropOverlay.classList.remove('active');
+            });
+
+            document.getElementById('previewContainer').addEventListener('drop', async (e) => {
+                e.preventDefault();
+                dropOverlay.classList.remove('active');
+                const files = Array.from(e.dataTransfer.files);
+                for (const file of files) {
+                    try {
+                        const media = await mediaManager.importFile(file);
+                        if (media) showToast(`Imported ${media.name}`, 'success');
+                    } catch (error) {
+                        showToast(error.message, 'error');
+                    }
+                }
+                renderMediaLibrary();
+                state.saveHistory();
             });
 
             // Playback controls
-            document.getElementById('btnPlayPause').addEventListener('click', togglePlay);
-            document.getElementById('btnPrevFrame').addEventListener('click', () => { state.playhead = Math.max(0, state.playhead - 0.04); updatePlayheadUI(); drawPreview(); });
-            document.getElementById('btnNextFrame').addEventListener('click', () => { state.playhead += 0.04; updatePlayheadUI(); drawPreview(); });
-            document.getElementById('btnGoStart').addEventListener('click', () => { state.playhead = 0; updatePlayheadUI(); drawPreview(); });
-            document.getElementById('btnGoEnd').addEventListener('click', () => { state.playhead = getTimelineDuration(); updatePlayheadUI(); drawPreview(); });
-            document.getElementById('progressBar').addEventListener('input', e => { state.playhead = (e.target.value/100)*getTimelineDuration(); updatePlayheadUI(); drawPreview(); });
-            document.getElementById('volumeControl').addEventListener('input', e => { document.getElementById('previewCanvas').volume = e.target.value; });
-            document.getElementById('btnMute').addEventListener('click', () => { document.getElementById('volumeControl').value = 0; });
-            document.getElementById('btnFullscreen').addEventListener('click', () => { document.getElementById('previewCanvasWrap').requestFullscreen(); });
-
-            // Timeline zoom
-            document.getElementById('btnTimelineZoomIn').addEventListener('click', () => { state.zoom = Math.min(2, state.zoom+0.2); renderTimeline(); });
-            document.getElementById('btnTimelineZoomOut').addEventListener('click', () => { state.zoom = Math.max(0.2, state.zoom-0.2); renderTimeline(); });
-
-            // Basic actions
-            document.getElementById('btnSplitClip').addEventListener('click', splitSelectedClip);
-            document.getElementById('btnDuplicateClip').addEventListener('click', duplicateSelectedClip);
-            document.getElementById('btnDeleteClip').addEventListener('click', deleteSelectedClip);
-            document.getElementById('btnSetIn').addEventListener('click', () => setTrim('in'));
-            document.getElementById('btnSetOut').addEventListener('click', () => setTrim('out'));
-            document.getElementById('btnResetTrim').addEventListener('click', resetTrim);
-            document.getElementById('clipSpeed').addEventListener('change', e => { const c=state.clips.find(c=>c.id===state.selectedClipId); if(c){c.speed=parseFloat(e.target.value); document.getElementById('resultingDuration').textContent = `Resulting: ${formatTime((c.end-c.start)*(1/c.speed))}`; saveHistory(); renderTimeline(); }});
-            document.getElementById('clipVolume').addEventListener('input', e => { const c=state.clips.find(c=>c.id===state.selectedClipId); if(c){c.volume=parseFloat(e.target.value); saveHistory();} });
-            document.getElementById('btnMuteClip').addEventListener('click', () => { const c=state.clips.find(c=>c.id===state.selectedClipId); if(c){c.muted=!c.muted; toast(c.muted?'Muted':'Unmuted'); saveHistory();} });
-            document.getElementById('fadeInInput').addEventListener('change', e => { const c=state.clips.find(c=>c.id===state.selectedClipId); if(c){c.fadeIn=parseFloat(e.target.value); saveHistory();} });
-            document.getElementById('fadeOutInput').addEventListener('change', e => { const c=state.clips.find(c=>c.id===state.selectedClipId); if(c){c.fadeOut=parseFloat(e.target.value); saveHistory();} });
-
-            // Transform
-            ['posX','posY','scaleW','scaleH','rotation','cropTop','cropBottom','cropLeft','cropRight'].forEach(id => {
-                document.getElementById(id).addEventListener('input', e => {
-                    const c=state.clips.find(c=>c.id===state.selectedClipId); if(!c) return;
-                    const val = parseFloat(e.target.value);
-                    const key = id.replace('pos','').replace('scale','').replace('crop','').toLowerCase();
-                    if(id.startsWith('pos')) c.transform.x = id==='posX'?val:c.transform.x, c.transform.y = id==='posY'?val:c.transform.y;
-                    if(id.startsWith('scale')) c.transform.scaleX = id==='scaleW'?val:c.transform.scaleX, c.transform.scaleY = id==='scaleH'?val:c.transform.scaleY;
-                    if(id.startsWith('crop')) c.transform['crop'+id.slice(4)] = val;
-                    if(id==='rotation') c.transform.rotation = val;
-                    if(document.getElementById('lockAspect').checked && id==='scaleW') c.transform.scaleY = val;
-                    if(document.getElementById('lockAspect').checked && id==='scaleH') c.transform.scaleX = val;
-                    saveHistory(); drawPreview();
+            document.getElementById('btnPlayPause').addEventListener('click', () => previewManager.toggle());
+            document.getElementById('btnPrevFrame').addEventListener('click', () => {
+                state.playhead = Math.max(0, state.playhead - 0.04);
+                updatePlayheadUI();
+                previewManager.render();
+            });
+            document.getElementById('btnNextFrame').addEventListener('click', () => {
+                state.playhead = Math.min(state.totalDuration, state.playhead + 0.04);
+                updatePlayheadUI();
+                previewManager.render();
+            });
+            document.getElementById('btnGoToStart').addEventListener('click', () => {
+                state.playhead = 0;
+                updatePlayheadUI();
+                previewManager.render();
+            });
+            document.getElementById('btnGoToEnd').addEventListener('click', () => {
+                state.playhead = state.totalDuration;
+                updatePlayheadUI();
+                previewManager.render();
+            });
+            document.getElementById('progressBar').addEventListener('input', (e) => {
+                const progress = parseFloat(e.target.value) / 100;
+                state.playhead = progress * state.totalDuration;
+                updatePlayheadUI();
+                previewManager.render();
+            });
+            document.getElementById('volumeSlider').addEventListener('input', (e) => {
+                const volume = parseFloat(e.target.value);
+                state.clips.forEach(clip => {
+                    if (clip.mediaId) {
+                        const media = state.media.find(m => m.id === clip.mediaId);
+                        if (media && media.element) media.element.volume = volume;
+                    }
                 });
             });
-            document.getElementById('flipH').addEventListener('change', e => { const c=state.clips.find(c=>c.id===state.selectedClipId); if(c){c.transform.flipH=e.target.checked; saveHistory();} });
-            document.getElementById('flipV').addEventListener('change', e => { const c=state.clips.find(c=>c.id===state.selectedClipId); if(c){c.transform.flipV=e.target.checked; saveHistory();} });
-            document.getElementById('aspectPreset').addEventListener('change', e => { const c=state.clips.find(c=>c.id===state.selectedClipId); if(c){c.transform.aspect=e.target.value; saveHistory();} });
-            document.getElementById('btnResetTransform').addEventListener('click', () => { const c=state.clips.find(c=>c.id===state.selectedClipId); if(c){c.transform={x:0,y:0,scaleX:100,scaleY:100,rotation:0,cropTop:0,cropBottom:0,cropLeft:0,cropRight:0,flipH:false,flipV:false,aspect:'original'}; saveHistory(); selectClip(c.id);} });
-
-            // Filters
-            ['filterBrightness','filterContrast','filterSaturation','filterExposure','filterTemperature','filterTint','filterBlur','filterGrayscale','filterSepia','filterHue','filterOpacity'].forEach(id => {
-                document.getElementById(id).addEventListener('input', e => {
-                    const c=state.clips.find(c=>c.id===state.selectedClipId); if(!c) return;
-                    const key = id.replace('filter','').toLowerCase();
-                    c.filters[key] = parseFloat(e.target.value);
-                    saveHistory(); drawPreview();
-                });
+            document.getElementById('btnMute').addEventListener('click', () => {
+                const slider = document.getElementById('volumeSlider');
+                slider.value = slider.value > 0 ? 0 : 1;
+                slider.dispatchEvent(new Event('input'));
             });
-            document.getElementById('btnResetFilters').addEventListener('click', () => { const c=state.clips.find(c=>c.id===state.selectedClipId); if(c){c.filters={brightness:100,contrast:100,saturation:100,exposure:100,temperature:0,tint:0,blur:0,grayscale:0,sepia:0,hue:0,opacity:100}; saveHistory(); selectClip(c.id);} });
-            document.getElementById('beforeAfterToggle').addEventListener('change', e => { if(e.target.checked) toast('Before view temporary'); else drawPreview(); });
-
-            // Transitions
-            document.getElementById('btnApplyTransition').addEventListener('click', () => {
-                const c=state.clips.find(c=>c.id===state.selectedClipId); if(!c) return;
-                c.transition = document.getElementById('transitionSelect').value;
-                c.transitionDuration = parseFloat(document.getElementById('transitionDuration').value);
-                toast('Transition set (preview only)'); saveHistory();
-            });
-
-            // Titles
-            document.querySelectorAll('#titlePresets button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const preset = btn.dataset.preset;
-                    const textObj = { id: uuid(), text: preset === 'subtitle' ? 'Subtitle' : 'Title', start: state.playhead, end: state.playhead+3, x: canvas.width/2, y: canvas.height/2, fontSize: 40, fontFamily:'Arial', fontWeight:'bold', color:'white', backgroundColor:'transparent', backgroundOpacity:1, alignment:'center' };
-                    state.textOverlays.push(textObj); saveHistory(); toast('Title added'); renderTimeline();
-                });
-            });
-
-            // Image overlays
-            document.getElementById('imageOverlayInput').addEventListener('change', async e => {
-                for(const f of e.target.files) {
-                    const media = await addMedia(f);
-                    if(media) { state.imageOverlays.push({ id:uuid(), mediaId:media.id, start:state.playhead, end:state.playhead+5, x:canvas.width/2, y:canvas.height/2, scale:1, rotation:0, opacity:1 }); toast('Image overlay added'); }
+            document.getElementById('btnFullscreen').addEventListener('click', () => {
+                const container = document.getElementById('previewContainer');
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                } else {
+                    container.requestFullscreen();
                 }
             });
 
+            // Timeline controls
+            document.getElementById('btnZoomIn').addEventListener('click', () => {
+                state.zoom = Math.min(2, state.zoom + 0.2);
+                renderTimeline();
+            });
+            document.getElementById('btnZoomOut').addEventListener('click', () => {
+                state.zoom = Math.max(0.2, state.zoom - 0.2);
+                renderTimeline();
+            });
+            document.getElementById('btnSnapToggle').addEventListener('click', (e) => {
+                state.snapEnabled = !state.snapEnabled;
+                e.target.classList.toggle('active', state.snapEnabled);
+            });
+
+            // Clip actions
+            document.getElementById('btnSplitClip').addEventListener('click', () => {
+                const clip = state.getSelectedClip();
+                if (!clip) {
+                    showToast('Select a clip first', 'warning');
+                    return;
+                }
+                const result = timelineManager.splitClip(clip.id, state.playhead);
+                if (result) {
+                    renderTimeline();
+                    renderInspector();
+                }
+            });
+
+            document.getElementById('btnDuplicateClip').addEventListener('click', () => {
+                const clip = state.getSelectedClip();
+                if (!clip) {
+                    showToast('Select a clip first', 'warning');
+                    return;
+                }
+                timelineManager.duplicateClip(clip.id);
+                renderTimeline();
+            });
+
+            document.getElementById('btnDeleteClip').addEventListener('click', () => {
+                const clip = state.getSelectedClip();
+                if (!clip) {
+                    showToast('Select a clip first', 'warning');
+                    return;
+                }
+                timelineManager.deleteClip(clip.id);
+            });
+
+            document.getElementById('btnApplyTrim').addEventListener('click', () => {
+                const clip = state.getSelectedClip();
+                if (!clip) {
+                    showToast('Select a clip first', 'warning');
+                    return;
+                }
+                const start = parseFloat(document.getElementById('trimStartInput').value);
+                const end = parseFloat(document.getElementById('trimEndInput').value);
+                if (isNaN(start) || isNaN(end) || start >= end) {
+                    showToast('Invalid trim range', 'warning');
+                    return;
+                }
+                timelineManager.applyTrim(clip.id, start, end);
+            });
+
+            document.getElementById('btnResetTrim').addEventListener('click', () => {
+                const clip = state.getSelectedClip();
+                if (!clip) {
+                    showToast('Select a clip first', 'warning');
+                    return;
+                }
+                timelineManager.resetTrim(clip.id);
+            });
+
+            // Speed
+            document.getElementById('clipSpeedSelect').addEventListener('change', (e) => {
+                const clip = state.getSelectedClip();
+                if (!clip) return;
+                const oldDuration = clip.timelineDuration;
+                const newSpeed = parseFloat(e.target.value);
+                clip.speed = newSpeed;
+                clip.timelineDuration = (clip.sourceEnd - clip.sourceStart) / newSpeed;
+                document.getElementById('speedResultDuration').textContent = `Resulting duration: ${formatTime(clip.timelineDuration)}`;
+                state.saveHistory();
+                renderTimeline();
+                renderInspector();
+            });
+
+            // Transform
+            document.getElementById('transformX').addEventListener('input', (e) => {
+                const clip = state.getSelectedClip();
+                if (clip) clip.transform.x = parseFloat(e.target.value);
+                document.getElementById('transformXVal').textContent = clip ? clip.transform.x : 0;
+                previewManager.render();
+            });
+            document.getElementById('transformY').addEventListener('input', (e) => {
+                const clip = state.getSelectedClip();
+                if (clip) clip.transform.y = parseFloat(e.target.value);
+                document.getElementById('transformYVal').textContent = clip ? clip.transform.y : 0;
+                previewManager.render();
+            });
+            document.getElementById('transformScaleX').addEventListener('input', (e) => {
+                const clip = state.getSelectedClip();
+                if (clip) {
+                    clip.transform.scaleX = parseFloat(e.target.value);
+                    if (document.getElementById('lockAspectRatio').checked) {
+                        clip.transform.scaleY = clip.transform.scaleX;
+                        document.getElementById('transformScaleY').value = clip.transform.scaleX;
+                        document.getElementById('transformScaleYVal').textContent = clip.transform.scaleX + '%';
+                    }
+                }
+                document.getElementById('transformScaleXVal').textContent = e.target.value + '%';
+                previewManager.render();
+            });
+            document.getElementById('transformScaleY').addEventListener('input', (e) => {
+                const clip = state.getSelectedClip();
+                if (clip) {
+                    clip.transform.scaleY = parseFloat(e.target.value);
+                    if (document.getElementById('lockAspectRatio').checked) {
+                        clip.transform.scaleX = clip.transform.scaleY;
+                        document.getElementById('transformScaleX').value = clip.transform.scaleY;
+                        document.getElementById('transformScaleXVal').textContent = clip.transform.scaleY + '%';
+                    }
+                }
+                document.getElementById('transformScaleYVal').textContent = e.target.value + '%';
+                previewManager.render();
+            });
+            document.getElementById('transformRotation').addEventListener('input', (e) => {
+                const clip = state.getSelectedClip();
+                if (clip) clip.transform.rotation = parseFloat(e.target.value);
+                document.getElementById('transformRotationVal').textContent = e.target.value + '°';
+                previewManager.render();
+            });
+            document.getElementById('transformFlipH').addEventListener('change', (e) => {
+                const clip = state.getSelectedClip();
+                if (clip) clip.transform.flipH = e.target.checked;
+                previewManager.render();
+            });
+            document.getElementById('transformFlipV').addEventListener('change', (e) => {
+                const clip = state.getSelectedClip();
+                if (clip) clip.transform.flipV = e.target.checked;
+                previewManager.render();
+            });
+            document.getElementById('btnResetTransform').addEventListener('click', () => {
+                const clip = state.getSelectedClip();
+                if (clip) {
+                    clip.transform = {
+                        x: 0,
+                        y: 0,
+                        scaleX: 100,
+                        scaleY: 100,
+                        rotation: 0,
+                        flipH: false,
+                        flipV: false
+                    };
+                    renderInspector();
+                    previewManager.render();
+                    state.saveHistory();
+                }
+            });
+
+            // Filters
+            const filterMappings = {
+                'filterBrightness': { key: 'brightness', display: 'filterBrightnessVal' },
+                'filterContrast': { key: 'contrast', display: 'filterContrastVal' },
+                'filterSaturation': { key: 'saturation', display: 'filterSaturationVal' },
+                'filterBlur': { key: 'blur', display: 'filterBlurVal' },
+                'filterGrayscale': { key: 'grayscale', display: 'filterGrayscaleVal' },
+                'filterSepia': { key: 'sepia', display: 'filterSepiaVal' },
+                'filterHue': { key: 'hue', display: 'filterHueVal' },
+                'filterOpacity': { key: 'opacity', display: 'filterOpacityVal' }
+            };
+
+            Object.entries(filterMappings).forEach(([inputId, config]) => {
+                document.getElementById(inputId).addEventListener('input', (e) => {
+                    const clip = state.getSelectedClip();
+                    if (clip) clip.filters[config.key] = parseFloat(e.target.value);
+                    const display = document.getElementById(config.display);
+                    if (display) {
+                        display.textContent = e.target.value + (config.key === 'opacity' || config.key === 'grayscale' || config.key === 'sepia' ? '%' : config.key === 'hue' ? '°' : '');
+                    }
+                    previewManager.render();
+                });
+            });
+
+            document.getElementById('btnResetFilters').addEventListener('click', () => {
+                const clip = state.getSelectedClip();
+                if (clip) {
+                    clip.filters = {
+                        brightness: 100,
+                        contrast: 100,
+                        saturation: 100,
+                        blur: 0,
+                        grayscale: 0,
+                        sepia: 0,
+                        hue: 0,
+                        opacity: 100
+                    };
+                    renderInspector();
+                    previewManager.render();
+                    state.saveHistory();
+                }
+            });
+
+            document.getElementById('btnBeforeAfter').addEventListener('click', () => {
+                showToast('Before/After preview not fully implemented', 'warning');
+            });
+
+            // Audio controls
+            document.getElementById('clipVolume').addEventListener('input', (e) => {
+                const clip = state.getSelectedClip();
+                if (clip) clip.volume = parseFloat(e.target.value);
+                document.getElementById('clipVolumeVal').textContent = Math.round(e.target.value * 100) + '%';
+                previewManager.render();
+            });
+            document.getElementById('btnMuteClip').addEventListener('click', () => {
+                const clip = state.getSelectedClip();
+                if (clip) clip.muted = !clip.muted;
+                showToast(clip.muted ? 'Clip muted' : 'Clip unmuted', 'success');
+            });
+            document.getElementById('fadeInInput').addEventListener('change', (e) => {
+                const clip = state.getSelectedClip();
+                if (clip) clip.fadeIn = parseFloat(e.target.value) || 0;
+                state.saveHistory();
+            });
+            document.getElementById('fadeOutInput').addEventListener('change', (e) => {
+                const clip = state.getSelectedClip();
+                if (clip) clip.fadeOut = parseFloat(e.target.value) || 0;
+                state.saveHistory();
+            });
+            document.getElementById('btnDetachAudio').addEventListener('click', () => {
+                const clip = state.getSelectedClip();
+                if (clip) {
+                    showToast('Audio detach is conceptual - browser limitations', 'warning');
+                }
+            });
+
+            // Transition
+            document.getElementById('btnApplyTransition').addEventListener('click', () => {
+                const clip = state.getSelectedClip();
+                if (clip) {
+                    const type = document.getElementById('transitionType').value;
+                    const duration = parseFloat(document.getElementById('transitionDuration').value);
+                    clip.transitionType = type;
+                    clip.transitionDuration = duration;
+                    state.saveHistory();
+                    showToast('Transition applied to clip', 'success');
+                }
+            });
+
+            // Text overlays
+            document.getElementById('btnAddTextOverlay').addEventListener('click', () => {
+                state.textOverlays.push({
+                    id: 'text-' + Date.now(),
+                    text: 'New Title',
+                    start: state.playhead,
+                    end: state.playhead + 3,
+                    x: previewManager.canvas.width / 2,
+                    y: previewManager.canvas.height / 2,
+                    fontSize: 32,
+                    fontFamily: 'Arial',
+                    fontWeight: 'bold',
+                    color: 'white',
+                    alignment: 'center'
+                });
+                state.saveHistory();
+                renderPreview();
+                showToast('Text overlay added', 'success');
+            });
+
+            document.querySelectorAll('[data-preset]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const preset = btn.dataset.preset;
+                    const textMap = {
+                        'title': 'Title',
+                        'subtitle': 'Subtitle',
+                        'lower-third': 'Lower Third',
+                        'center': 'Center Title'
+                    };
+                    state.textOverlays.push({
+                        id: 'text-' + Date.now(),
+                        text: textMap[preset] || 'Title',
+                        start: state.playhead,
+                        end: state.playhead + 3,
+                        x: previewManager.canvas.width / 2,
+                        y: previewManager.canvas.height / 2,
+                        fontSize: preset === 'lower-third' ? 18 : 32,
+                        fontFamily: 'Arial',
+                        fontWeight: 'bold',
+                        color: preset === 'lower-third' ? '#ffd700' : 'white',
+                        alignment: 'center'
+                    });
+                    state.saveHistory();
+                    renderPreview();
+                    showToast(`${textMap[preset] || 'Title'} added`, 'success');
+                });
+            });
+
             // Undo/Redo
-            document.getElementById('btnUndo').addEventListener('click', undo);
-            document.getElementById('btnRedo').addEventListener('click', redo);
+            document.getElementById('btnUndo').addEventListener('click', () => state.undo());
+            document.getElementById('btnRedo').addEventListener('click', () => state.redo());
 
             // Project save/load
+            document.getElementById('btnNewProject').addEventListener('click', () => {
+                state.clips = [];
+                state.textOverlays = [];
+                state.imageOverlays = [];
+                state.playhead = 0;
+                state.selectedClipId = null;
+                state.projectName = 'Untitled Project';
+                state.undoStack = [];
+                state.redoStack = [];
+                renderTimeline();
+                renderInspector();
+                renderMediaLibrary();
+                renderPreview();
+                updateUndoRedoButtons();
+                document.getElementById('projectNameDisplay').textContent = state.projectName;
+                showToast('New project created', 'success');
+            });
+
             document.getElementById('btnSaveProject').addEventListener('click', () => {
-                const data = { clips: state.clips, playhead: state.playhead, textOverlays: state.textOverlays, imageOverlays: state.imageOverlays };
-                const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
-                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'project.json'; a.click();
+                const projectData = {
+                    projectName: state.projectName,
+                    clips: state.clips,
+                    textOverlays: state.textOverlays,
+                    imageOverlays: state.imageOverlays,
+                    playhead: state.playhead
+                };
+                const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'project.json';
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+                showToast('Project saved', 'success');
             });
-            document.getElementById('btnOpenProject').addEventListener('click', () => document.getElementById('projectFileInput').click());
-            document.getElementById('projectFileInput').addEventListener('change', e => {
-                const fr = new FileReader(); fr.onload = () => { const data = JSON.parse(fr.result); state.clips=data.clips||[]; state.playhead=data.playhead||0; state.textOverlays=data.textOverlays||[]; state.imageOverlays=data.imageOverlays||[]; renderTimeline(); updatePlayheadUI(); toast('Project loaded. Re-select media files if needed.'); };
-                fr.readAsText(e.target.files[0]);
+
+            document.getElementById('btnOpenProject').addEventListener('click', () => {
+                document.getElementById('projectFileInput').click();
             });
-            document.getElementById('btnNewProject').addEventListener('click', () => { state.clips=[]; state.playhead=0; state.textOverlays=[]; state.imageOverlays=[]; renderTimeline(); updatePlayheadUI(); toast('New project'); });
+
+            document.getElementById('projectFileInput').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        state.clips = data.clips || [];
+                        state.textOverlays = data.textOverlays || [];
+                        state.imageOverlays = data.imageOverlays || [];
+                        state.playhead = data.playhead || 0;
+                        state.projectName = data.projectName || 'Untitled Project';
+                        document.getElementById('projectNameDisplay').textContent = state.projectName;
+                        state.undoStack = [];
+                        state.redoStack = [];
+                        renderTimeline();
+                        renderInspector();
+                        renderPreview();
+                        updateUndoRedoButtons();
+                        showToast('Project loaded. Re-select media files if needed.', 'warning');
+                    } catch (error) {
+                        showToast('Failed to load project: ' + error.message, 'error');
+                    }
+                };
+                reader.readAsText(file);
+                e.target.value = '';
+            });
 
             // Export
-            document.getElementById('btnExport').addEventListener('click', () => { document.getElementById('exportModal').style.display='flex'; });
-            document.getElementById('btnStartExport').addEventListener('click', startExport);
-            document.getElementById('btnCancelExport').addEventListener('click', () => { if(window.currentExportCancel) window.currentExportCancel(); });
+            document.getElementById('btnExport').addEventListener('click', () => {
+                document.getElementById('exportModal').classList.remove('hidden');
+            });
+            document.getElementById('btnCancelExport').addEventListener('click', () => {
+                exportManager.cancel();
+                document.getElementById('exportModal').classList.add('hidden');
+            });
+            document.getElementById('btnStartExport').addEventListener('click', () => {
+                exportManager.export();
+            });
 
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
-                if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
-                if(e.key === ' ') { e.preventDefault(); togglePlay(); }
-                if(e.key === 'Delete') deleteSelectedClip();
-                if(e.key === 's' || e.key === 'S') splitSelectedClip();
-                if(e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
-                if(e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
-                if(e.key === 'Home') { state.playhead=0; updatePlayheadUI(); drawPreview(); }
-                if(e.key === 'End') { state.playhead=getTimelineDuration(); updatePlayheadUI(); drawPreview(); }
-                if(e.key === 'ArrowLeft') { state.playhead=Math.max(0, state.playhead-0.1); updatePlayheadUI(); drawPreview(); }
-                if(e.key === 'ArrowRight') { state.playhead=Math.min(getTimelineDuration(), state.playhead+0.1); updatePlayheadUI(); drawPreview(); }
+                const target = e.target;
+                if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') return;
+
+                if (e.key === ' ') {
+                    e.preventDefault();
+                    previewManager.toggle();
+                } else if (e.key === 'Delete' || e.key === 'Backspace') {
+                    const clip = state.getSelectedClip();
+                    if (clip) timelineManager.deleteClip(clip.id);
+                } else if (e.key === 's' || e.key === 'S') {
+                    const clip = state.getSelectedClip();
+                    if (clip) {
+                        const result = timelineManager.splitClip(clip.id, state.playhead);
+                        if (result) {
+                            renderTimeline();
+                            renderInspector();
+                        }
+                    }
+                } else if (e.ctrlKey && e.key === 'z') {
+                    e.preventDefault();
+                    state.undo();
+                } else if (e.ctrlKey && e.key === 'y') {
+                    e.preventDefault();
+                    state.redo();
+                } else if (e.key === 'Home') {
+                    e.preventDefault();
+                    state.playhead = 0;
+                    updatePlayheadUI();
+                    previewManager.render();
+                } else if (e.key === 'End') {
+                    e.preventDefault();
+                    state.playhead = state.totalDuration;
+                    updatePlayheadUI();
+                    previewManager.render();
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    state.playhead = Math.max(0, state.playhead - 0.1);
+                    updatePlayheadUI();
+                    previewManager.render();
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    state.playhead = Math.min(state.totalDuration, state.playhead + 0.1);
+                    updatePlayheadUI();
+                    previewManager.render();
+                }
+            });
+        }
+
+        function renderPreview() {
+            previewManager.render();
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        function init() {
+            initializeEventListeners();
+            renderTimeline();
+            renderInspector();
+            renderMediaLibrary();
+            renderPreview();
+            updatePlayheadUI();
+            updateUndoRedoButtons();
+
+            // Auto-render preview when not playing
+            setInterval(() => {
+                if (!state.playing && document.hasFocus()) {
+                    previewManager.render();
+                }
+            }, 500);
+
+            // Update preview on window resize
+            window.addEventListener('resize', () => {
+                previewManager.render();
             });
 
-            // Initial
-            renderTimeline();
-            updatePlayheadUI();
-            drawPreview();
-            saveHistory();
+            console.log('Video Editor initialized successfully');
         }
 
-        function splitSelectedClip() {
-            const c = state.clips.find(c=>c.id===state.selectedClipId); if(!c) return;
-            if(state.playhead <= c.start || state.playhead >= c.end) { toast('Playhead must be inside clip'); return; }
-            const first = {...c, id:uuid(), end: state.playhead};
-            const second = {...c, id:uuid(), start: state.playhead, trimStart: c.trimStart + (state.playhead - c.start)};
-            state.clips = state.clips.filter(x=>x.id!==c.id);
-            state.clips.push(first, second);
-            saveHistory(); renderTimeline(); selectClip(second.id);
-        }
-        function duplicateSelectedClip() { const c=state.clips.find(c=>c.id===state.selectedClipId); if(c){ const copy={...c, id:uuid(), start:c.start+1}; state.clips.push(copy); saveHistory(); renderTimeline(); }}
-        function deleteSelectedClip() { if(state.selectedClipId){ state.clips=state.clips.filter(c=>c.id!==state.selectedClipId); state.selectedClipId=null; saveHistory(); renderTimeline(); }}
-        function setTrim(type) { const c=state.clips.find(c=>c.id===state.selectedClipId); if(!c) return; const val=parseFloat(document.getElementById('trimInInput').value); if(type==='in') c.trimStart=val; else c.trimEnd=parseFloat(document.getElementById('trimOutInput').value); c.end = c.trimEnd; c.start = c.trimStart; saveHistory(); renderTimeline(); }
-        function resetTrim() { const c=state.clips.find(c=>c.id===state.selectedClipId); if(c){c.trimStart=0; c.trimEnd=c.media?.duration||10; c.start=0; c.end=c.trimEnd; saveHistory(); renderTimeline(); selectClip(c.id);} }
-
+        // Start the application
         init();
-        // Update pixelsPerSecond from zoom
-        Object.defineProperty(window, 'pixelsPerSecond', { get: () => 80 * state.zoom, set: v => { } });
-        setInterval(() => { if(document.hasFocus()) drawPreview(); }, 100);
-    })();
-</script>
+    </script>
 </body>
 </html>
