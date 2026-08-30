@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "enabled": true,
-  "initialDelaySeconds": 5,
+  "initialDelaySeconds": 5000,
   "showDurationSeconds": 10,
   "repeatEverySeconds": 20,
 
