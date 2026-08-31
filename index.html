@@ -846,6 +846,126 @@
         .mb-8 {
             margin-bottom: 8px;
         }
+
+        /* Responsive preview and device-safe editor layout */
+        .preview-container {
+            min-width: 0;
+            min-height: 240px;
+        }
+
+        .preview-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            touch-action: manipulation;
+        }
+
+        .video-display-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .video-display-grid .form-group {
+            margin: 0;
+        }
+
+        @media (max-width: 1080px) {
+            .left-sidebar { width: 220px; min-width: 180px; }
+            .right-inspector { width: 240px; min-width: 200px; }
+            .timeline-container { height: 220px; min-height: 160px; }
+            .top-toolbar { padding: 0 10px; gap: 5px; }
+            .top-toolbar button { padding: 6px 8px; }
+        }
+
+        @media (max-width: 760px) {
+            html, body {
+                height: auto;
+                min-height: 100dvh;
+                overflow: auto;
+            }
+
+            .app-container {
+                height: auto;
+                min-height: 100dvh;
+                overflow: visible;
+            }
+
+            .top-toolbar {
+                position: sticky;
+                top: 0;
+                overflow-x: auto;
+                padding: 8px;
+                height: auto;
+                min-height: var(--toolbar-height);
+                z-index: 200;
+                scrollbar-width: none;
+            }
+
+            .top-toolbar::-webkit-scrollbar { display: none; }
+            .top-toolbar button { flex: 0 0 auto; }
+            .app-logo { flex: 0 0 auto; margin-right: 4px; }
+            .toolbar-spacer, .toolbar-divider { display: none; }
+
+            .main-layout {
+                flex: none;
+                flex-direction: column;
+                overflow: visible;
+            }
+
+            .center-area {
+                order: -1;
+                min-height: clamp(290px, 54dvh, 520px);
+            }
+
+            .preview-container {
+                min-height: clamp(240px, 47dvh, 430px);
+                padding: 8px;
+            }
+
+            .preview-controls {
+                gap: 6px;
+                padding: 8px;
+            }
+
+            .preview-controls .time-display { font-size: 10px; }
+            .preview-controls #progressBar { flex-basis: 100%; order: 3; }
+
+            .left-sidebar, .right-inspector {
+                width: 100%;
+                min-width: 0;
+                max-height: none;
+                border: 0;
+                border-top: 1px solid var(--border-color);
+            }
+
+            .sidebar-tabs, .inspector-tabs {
+                overflow-x: auto;
+                justify-content: flex-start;
+                scrollbar-width: none;
+            }
+
+            .sidebar-tabs::-webkit-scrollbar, .inspector-tabs::-webkit-scrollbar { display: none; }
+            .sidebar-tab, .inspector-tab { flex: 0 0 auto; min-width: 82px; }
+            .sidebar-content, .inspector-content { max-height: 310px; flex: none; }
+
+            .timeline-container { height: 210px; min-height: 210px; }
+            .timeline-toolbar { padding: 6px 8px; }
+            .video-display-grid { grid-template-columns: 1fr; }
+            .toast-container { left: 12px; right: 12px; bottom: 12px; }
+            .toast { max-width: none; }
+        }
+
+        @media (max-width: 400px) {
+            .top-toolbar .time-display { display: none; }
+            .preview-controls button { padding: 5px 7px; min-width: 28px; }
+            .preview-controls select { width: auto; max-width: 74px; padding: 4px; }
+            .preview-controls #volumeSlider { width: 46px !important; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+        }
     </style>
 </head>
 <body>
@@ -951,7 +1071,7 @@
                         <option value="3">3x</option>
                         <option value="4">4x</option>
                     </select>
-                    <select id="previewZoom" class="small" title="Preview zoom">
+                    <select id="previewZoomQuick" class="small" title="Preview zoom">
                         <option value="fit">Fit</option>
                         <option value="0.5">50%</option>
                         <option value="0.75">75%</option>
@@ -1060,6 +1180,48 @@
                             <option value="4">4x</option>
                         </select>
                         <div id="speedResultDuration" style="font-size:11px;color:var(--text-muted);margin-top:6px;"></div>
+                    </div>
+                    <div class="inspector-section">
+                        <h4>Video Display</h4>
+                        <div class="video-display-grid">
+                            <div class="form-group">
+                                <label>Fit Mode</label>
+                                <select id="previewFitMode">
+                                    <option value="contain" selected>Fit (show all)</option>
+                                    <option value="cover">Fill (crop edges)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Frame Ratio</label>
+                                <select id="previewAspectRatio">
+                                    <option value="auto" selected>Original</option>
+                                    <option value="16:9">16:9 Landscape</option>
+                                    <option value="9:16">9:16 Portrait</option>
+                                    <option value="1:1">1:1 Square</option>
+                                    <option value="4:3">4:3 Classic</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Background</label>
+                                <select id="previewBackground">
+                                    <option value="#000000" selected>Black</option>
+                                    <option value="#111827">Dark</option>
+                                    <option value="#ffffff">White</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Preview Zoom</label>
+                                <select id="previewZoom" class="small" title="Preview zoom">
+                                    <option value="fit" selected>Fit</option>
+                                    <option value="0.5">50%</option>
+                                    <option value="0.75">75%</option>
+                                    <option value="1">100%</option>
+                                    <option value="1.5">150%</option>
+                                    <option value="2">200%</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button id="btnResetVideoDisplay" class="small mt-8">Reset Video Display</button>
                     </div>
                     <div class="inspector-section">
                         <h4>Crop</h4>
@@ -1225,7 +1387,6 @@
                     <option value="high">High</option>
                 </select>
             </div>
-            <p style="font-size:11px;color:var(--warning);margin-bottom:12px;">⚠️ Only WebM export is supported in this browser. MP4 not available.</p>
             <div class="modal-actions">
                 <button id="btnCancelExport">Cancel</button>
                 <button id="btnStartExport" class="active">Start Export</button>
@@ -1254,6 +1415,12 @@
                 this.playing = false;
                 this.zoom = 1;
                 this.snapEnabled = true;
+                this.previewSettings = {
+                    fitMode: 'contain',
+                    aspectRatio: 'auto',
+                    background: '#000000',
+                    zoom: 'fit'
+                };
                 this.projectName = 'Untitled Project';
                 this.undoStack = [];
                 this.redoStack = [];
@@ -1283,6 +1450,7 @@
                     textOverlays: this.textOverlays,
                     imageOverlays: this.imageOverlays,
                     playhead: this.playhead,
+                    previewSettings: this.previewSettings,
                     projectName: this.projectName
                 });
             }
@@ -1323,6 +1491,7 @@
                 this.textOverlays = data.textOverlays || [];
                 this.imageOverlays = data.imageOverlays || [];
                 this.playhead = data.playhead || 0;
+                this.previewSettings = Object.assign(this.previewSettings, data.previewSettings || {});
                 this.projectName = data.projectName || 'Untitled Project';
                 renderTimeline();
                 updatePlayheadUI();
@@ -1395,6 +1564,9 @@
                     }
 
                     this.state.media.push(mediaObj);
+                    if (window.AndroidBridge && typeof window.AndroidBridge.registerMediaSource === 'function') {
+                        window.AndroidBridge.registerMediaSource(mediaObj.id, file.name, file.size);
+                    }
                     return mediaObj;
                 } catch (error) {
                     console.error('Media import error:', error);
@@ -1444,6 +1616,7 @@
                     muted: false,
                     fadeIn: 0,
                     fadeOut: 0,
+                    crop: { top: 0, bottom: 0, left: 0, right: 0 },
                     transform: {
                         x: 0,
                         y: 0,
@@ -1611,12 +1784,16 @@
 
             render() {
                 const container = document.getElementById('previewContainer');
-                const containerWidth = container.clientWidth - 24;
-                const containerHeight = container.clientHeight - 24;
-                this.canvas.width = containerWidth;
-                this.canvas.height = containerHeight;
+                const containerWidth = Math.max(1, container.clientWidth - 24);
+                const containerHeight = Math.max(1, container.clientHeight - 24);
+                const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+                this.canvas.width = Math.round(containerWidth * pixelRatio);
+                this.canvas.height = Math.round(containerHeight * pixelRatio);
+                this.canvas.style.width = containerWidth + 'px';
+                this.canvas.style.height = containerHeight + 'px';
 
-                this.ctx.fillStyle = '#000';
+                const settings = this.state.previewSettings || {};
+                this.ctx.fillStyle = settings.background || '#000000';
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
                 const playhead = this.state.playhead;
@@ -1631,27 +1808,55 @@
                         const localTime = clip.sourceStart + ((playhead - clip.timelineStart) * clip.speed);
                         const element = media.element;
 
-                        let sourceX = 0;
-                        let sourceY = 0;
-                        let sourceWidth = media.width || element.videoWidth || 100;
-                        let sourceHeight = media.height || element.videoHeight || 100;
+                        const sourceFullWidth = media.width || element.videoWidth || 100;
+                        const sourceFullHeight = media.height || element.videoHeight || 100;
+                        const crop = Object.assign({ top: 0, bottom: 0, left: 0, right: 0 }, clip.crop || {});
+                        const cropLeft = Math.max(0, Math.min(49, Number(crop.left) || 0));
+                        const cropRight = Math.max(0, Math.min(49, Number(crop.right) || 0));
+                        const cropTop = Math.max(0, Math.min(49, Number(crop.top) || 0));
+                        const cropBottom = Math.max(0, Math.min(49, Number(crop.bottom) || 0));
+                        const sourceX = sourceFullWidth * cropLeft / 100;
+                        const sourceY = sourceFullHeight * cropTop / 100;
+                        const sourceWidth = sourceFullWidth * Math.max(0.02, 1 - (cropLeft + cropRight) / 100);
+                        const sourceHeight = sourceFullHeight * Math.max(0.02, 1 - (cropTop + cropBottom) / 100);
 
                         if (media.type === 'video' && element.readyState >= 2) {
                             element.currentTime = Math.min(localTime, element.duration || localTime);
                         }
 
-                        this.ctx.save();
-                        this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
-                        this.ctx.translate(clip.transform.x, clip.transform.y);
-                        this.ctx.rotate((clip.transform.rotation || 0) * Math.PI / 180);
-                        const scaleX = (clip.transform.scaleX || 100) / 100;
-                        const scaleY = (clip.transform.scaleY || 100) / 100;
-                        this.ctx.scale(scaleX, scaleY);
-                        if (clip.transform.flipH) this.ctx.scale(-1, 1);
-                        if (clip.transform.flipV) this.ctx.scale(1, -1);
+                        const aspectMap = { '16:9': 16 / 9, '9:16': 9 / 16, '1:1': 1, '4:3': 4 / 3 };
+                        const frameAspect = aspectMap[settings.aspectRatio]
+                            || sourceWidth / Math.max(1, sourceHeight);
+                        let frameWidth = this.canvas.width;
+                        let frameHeight = this.canvas.height;
+                        if (frameWidth / frameHeight > frameAspect) {
+                            frameWidth = frameHeight * frameAspect;
+                        } else {
+                            frameHeight = frameWidth / frameAspect;
+                        }
+                        const frameX = (this.canvas.width - frameWidth) / 2;
+                        const frameY = (this.canvas.height - frameHeight) / 2;
+                        const baseScale = settings.fitMode === 'cover'
+                            ? Math.max(frameWidth / sourceWidth, frameHeight / sourceHeight)
+                            : Math.min(frameWidth / sourceWidth, frameHeight / sourceHeight);
+                        const zoom = settings.zoom === 'fit' ? 1 : Math.max(0.1, Number(settings.zoom) || 1);
+                        const transform = Object.assign({ x: 0, y: 0, scaleX: 100, scaleY: 100, rotation: 0, flipH: false, flipV: false }, clip.transform || {});
 
-                        const drawWidth = this.canvas.width * scaleX;
-                        const drawHeight = this.canvas.height * scaleY;
+                        this.ctx.save();
+                        this.ctx.beginPath();
+                        this.ctx.rect(frameX, frameY, frameWidth, frameHeight);
+                        this.ctx.clip();
+                        this.ctx.translate(frameX + frameWidth / 2, frameY + frameHeight / 2);
+                        this.ctx.translate(transform.x * pixelRatio, transform.y * pixelRatio);
+                        this.ctx.rotate((transform.rotation || 0) * Math.PI / 180);
+                        const scaleX = (transform.scaleX || 100) / 100;
+                        const scaleY = (transform.scaleY || 100) / 100;
+                        this.ctx.scale(scaleX, scaleY);
+                        if (transform.flipH) this.ctx.scale(-1, 1);
+                        if (transform.flipV) this.ctx.scale(1, -1);
+
+                        const drawWidth = sourceWidth * baseScale * zoom;
+                        const drawHeight = sourceHeight * baseScale * zoom;
 
                         this.ctx.filter = this.buildFilterString(clip.filters);
                         this.ctx.drawImage(element, sourceX, sourceY, sourceWidth, sourceHeight, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight);
@@ -1720,6 +1925,11 @@
                 if (this.exporting) return;
                 if (this.state.totalDuration <= 0) {
                     showToast('Timeline is empty. Add media before exporting.', 'error');
+                    return;
+                }
+
+                if (window.AndroidBridge && typeof window.AndroidBridge.exportMp4 === 'function') {
+                    this.exportToAndroidMp4();
                     return;
                 }
 
@@ -1819,6 +2029,61 @@
 
             cancel() {
                 this.cancelRequested = true;
+                if (window.AndroidBridge && typeof window.AndroidBridge.cancelMp4Export === 'function') {
+                    window.AndroidBridge.cancelMp4Export();
+                }
+            }
+
+            exportToAndroidMp4() {
+                if (this.exporting) return;
+                this.exporting = true;
+                this.cancelRequested = false;
+                document.getElementById('btnStartExport').disabled = true;
+                document.getElementById('exportProgressDisplay').textContent = 'Preparing MP4 export...';
+                try {
+                    const payload = {
+                        version: 1,
+                        projectName: this.state.projectName,
+                        clips: this.state.clips,
+                        textOverlays: this.state.textOverlays,
+                        imageOverlays: this.state.imageOverlays,
+                        previewSettings: this.state.previewSettings,
+                        export: {
+                            resolution: document.getElementById('exportResolution').value,
+                            fps: Number(document.getElementById('exportFps').value),
+                            quality: document.getElementById('exportQuality').value
+                        },
+                        media: this.state.media.map(media => ({
+                            id: media.id,
+                            name: media.name,
+                            type: media.type,
+                            size: media.size
+                        }))
+                    };
+                    window.AndroidBridge.exportMp4(JSON.stringify(payload));
+                } catch (error) {
+                    this.nativeExportFailed(error.message || 'Could not start MP4 export');
+                }
+            }
+
+            nativeExportProgress(percent, message) {
+                document.getElementById('exportProgressDisplay').textContent =
+                    (message || 'Exporting MP4...') + ' ' + Math.max(0, Math.min(100, Number(percent) || 0)).toFixed(0) + '%';
+            }
+
+            nativeExportComplete(fileName) {
+                this.exporting = false;
+                document.getElementById('btnStartExport').disabled = false;
+                document.getElementById('exportProgressDisplay').textContent = 'MP4 export complete.';
+                document.getElementById('exportModal').classList.add('hidden');
+                showToast(fileName ? 'MP4 saved: ' + fileName : 'MP4 export complete', 'success');
+            }
+
+            nativeExportFailed(message) {
+                this.exporting = false;
+                document.getElementById('btnStartExport').disabled = false;
+                document.getElementById('exportProgressDisplay').textContent = message || 'MP4 export failed.';
+                showToast(message || 'MP4 export failed', 'error');
             }
         }
 
@@ -1830,6 +2095,14 @@
         const timelineManager = new TimelineManager(state, mediaManager);
         const previewManager = new PreviewManager(state);
         const exportManager = new ExportManager(state, previewManager);
+
+        // Android calls these callbacks during a native MP4 export. They are harmless when this
+        // same file is published on GitHub and opened in a normal browser.
+        window.NativeVideoEditor = {
+            exportProgress: (percent, message) => exportManager.nativeExportProgress(percent, message),
+            exportComplete: (fileName) => exportManager.nativeExportComplete(fileName),
+            exportFailed: (message) => exportManager.nativeExportFailed(message)
+        };
 
         // ============================================
         // TOAST NOTIFICATIONS
@@ -1928,6 +2201,14 @@
             document.getElementById('trimEndInput').value = clip.sourceEnd.toFixed(2);
             document.getElementById('clipSpeedSelect').value = clip.speed;
             document.getElementById('speedResultDuration').textContent = `Resulting duration: ${formatTime(clip.timelineDuration)}`;
+            const crop = Object.assign({ top: 0, bottom: 0, left: 0, right: 0 }, clip.crop || {});
+            clip.crop = crop;
+            ['top', 'bottom', 'left', 'right'].forEach(side => {
+                const input = document.getElementById('crop' + side.charAt(0).toUpperCase() + side.slice(1));
+                const display = document.getElementById('crop' + side.charAt(0).toUpperCase() + side.slice(1) + 'Val');
+                if (input) input.value = crop[side];
+                if (display) display.textContent = crop[side] + '%';
+            });
             document.getElementById('clipVolume').value = clip.volume;
             document.getElementById('clipVolumeVal').textContent = Math.round(clip.volume * 100) + '%';
             document.getElementById('fadeInInput').value = clip.fadeIn;
@@ -2239,6 +2520,53 @@
                 } else {
                     container.requestFullscreen();
                 }
+            });
+
+            // Video display settings: preserve aspect ratio on every screen and let the user
+            // choose the visible framing without changing the source media.
+            const syncVideoDisplayControls = () => {
+                document.getElementById('previewFitMode').value = state.previewSettings.fitMode;
+                document.getElementById('previewAspectRatio').value = state.previewSettings.aspectRatio;
+                document.getElementById('previewBackground').value = state.previewSettings.background;
+                document.getElementById('previewZoom').value = state.previewSettings.zoom;
+                document.getElementById('previewZoomQuick').value = state.previewSettings.zoom;
+            };
+            const updateVideoDisplay = () => {
+                state.previewSettings.fitMode = document.getElementById('previewFitMode').value;
+                state.previewSettings.aspectRatio = document.getElementById('previewAspectRatio').value;
+                state.previewSettings.background = document.getElementById('previewBackground').value;
+                state.previewSettings.zoom = document.getElementById('previewZoom').value;
+                document.getElementById('previewZoomQuick').value = state.previewSettings.zoom;
+                previewManager.render();
+            };
+            ['previewFitMode', 'previewAspectRatio', 'previewBackground', 'previewZoom'].forEach(id => {
+                document.getElementById(id).addEventListener('change', updateVideoDisplay);
+            });
+            document.getElementById('previewZoomQuick').addEventListener('change', (e) => {
+                state.previewSettings.zoom = e.target.value;
+                document.getElementById('previewZoom').value = e.target.value;
+                previewManager.render();
+            });
+            document.getElementById('btnResetVideoDisplay').addEventListener('click', () => {
+                state.previewSettings = { fitMode: 'contain', aspectRatio: 'auto', background: '#000000', zoom: 'fit' };
+                syncVideoDisplayControls();
+                previewManager.render();
+            });
+            syncVideoDisplayControls();
+
+            const cropControls = { top: 'cropTop', bottom: 'cropBottom', left: 'cropLeft', right: 'cropRight' };
+            Object.entries(cropControls).forEach(([side, inputId]) => {
+                const input = document.getElementById(inputId);
+                const output = document.getElementById(inputId + 'Val');
+                input.addEventListener('input', (e) => {
+                    const clip = state.getSelectedClip();
+                    if (!clip) return;
+                    clip.crop = Object.assign({ top: 0, bottom: 0, left: 0, right: 0 }, clip.crop || {});
+                    clip.crop[side] = parseFloat(e.target.value) || 0;
+                    output.textContent = clip.crop[side] + '%';
+                    previewManager.render();
+                });
+                input.addEventListener('change', () => state.saveHistory());
             });
 
             // Timeline controls
@@ -2565,7 +2893,8 @@
                     clips: state.clips,
                     textOverlays: state.textOverlays,
                     imageOverlays: state.imageOverlays,
-                    playhead: state.playhead
+                    playhead: state.playhead,
+                    previewSettings: state.previewSettings
                 };
                 const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
@@ -2592,6 +2921,12 @@
                         state.textOverlays = data.textOverlays || [];
                         state.imageOverlays = data.imageOverlays || [];
                         state.playhead = data.playhead || 0;
+                        state.previewSettings = Object.assign(state.previewSettings, data.previewSettings || {});
+                        document.getElementById('previewFitMode').value = state.previewSettings.fitMode;
+                        document.getElementById('previewAspectRatio').value = state.previewSettings.aspectRatio;
+                        document.getElementById('previewBackground').value = state.previewSettings.background;
+                        document.getElementById('previewZoom').value = state.previewSettings.zoom;
+                        document.getElementById('previewZoomQuick').value = state.previewSettings.zoom;
                         state.projectName = data.projectName || 'Untitled Project';
                         document.getElementById('projectNameDisplay').textContent = state.projectName;
                         state.undoStack = [];
