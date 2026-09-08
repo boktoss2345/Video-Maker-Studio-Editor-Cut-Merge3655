@@ -1,3 +1,4 @@
+```json
 {
   "schemaVersion": 1,
   "enabled": true,
@@ -28,53 +29,6 @@
   },
 
   "ads": [
-    {
-      "id": "capcut_video_01",
-      "enabled": true,
-      "elements": [
-        {
-          "type": "video",
-          "enabled": true,
-          "src": "https://boktoss2345.github.io/Video-Maker-Studio-Editor-Cut-Merge3655/assets/0828.mp4",
-          "autoplay": true,
-          "loop": true,
-          "muted": true,
-          "controls": false,
-          "widthPercent": 94,
-          "maxWidthDp": 760,
-          "contentScale": "fit",
-          "cornerRadiusDp": 20,
-          "clickable": true,
-          "url": "amzn://apps/android?initiatePurchaseFlow=true&asin=B0HB6YN5DY"
-        },
-        {
-          "type": "button",
-          "enabled": true,
-          "text": "DOWNLOAD\nGoogle Play Store Manager",
-          "backgroundColor": "#FFD400",
-          "textColor": "#000000",
-          "textSizeSp": 18,
-          "bold": true,
-          "widthPercent": 82,
-          "maxWidthDp": 420,
-          "heightDp": 64,
-          "cornerRadiusDp": 16,
-          "marginTopDp": 12,
-          "gravity": "center",
-          "clickable": true,
-          "url": "amzn://apps/android?initiatePurchaseFlow=true&asin=B0HB6YN5DY"
-        },
-        {
-          "type": "countdown",
-          "enabled": true,
-          "seconds": 25,
-          "style": "circle",
-          "position": "topRight",
-          "autoCloseAtZero": true
-        }
-      ]
-    },
-
     {
       "id": "capcut_video_02",
       "enabled": true,
@@ -166,3 +120,4 @@
     }
   ]
 }
+```
