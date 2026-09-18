@@ -187,7 +187,7 @@
         {
           "type": "button",
           "enabled": true,
-          "text": "DOWNLOAD APP",
+          "text": "DOWNLOAD CapCut",
           "backgroundColor": "#FFD400",
           "textColor": "#000000",
           "textSizeSp": 20,
@@ -230,7 +230,7 @@
         {
           "type": "button",
           "enabled": true,
-          "text": "DOWNLOAD APP",
+          "text": "DOWNLOAD CapCut",
           "backgroundColor": "#FFD400",
           "textColor": "#000000",
           "textSizeSp": 20,
