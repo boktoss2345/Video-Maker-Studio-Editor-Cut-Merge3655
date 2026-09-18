@@ -3,7 +3,7 @@
   "enabled": true,
   "initialDelaySeconds": 5,
   "showDurationSeconds": 25,
-  "repeatEverySeconds": 10,
+  "repeatEverySeconds": 20,
 
   "countdown": {
     "enabled": true,
@@ -14,7 +14,7 @@
   },
 
   "behavior": {
-    "selectionMode": "random",
+    "selectionMode": "sequential",
     "refreshConfigBeforeShow": true,
     "pauseWhileAppInBackground": true,
     "avoidImmediateRepeat": true
@@ -153,96 +153,6 @@
           "gravity": "center",
           "clickable": true,
           "url": "amzn://apps/android?initiatePurchaseFlow=true&asin=B0H7SBR4MW"
-        },
-        {
-          "type": "countdown",
-          "enabled": true,
-          "seconds": 25,
-          "style": "circle",
-          "position": "topRight",
-          "autoCloseAtZero": true
-        }
-      ]
-    },
-
-    {
-      "id": "amazon_video_04",
-      "enabled": true,
-      "elements": [
-        {
-          "type": "video",
-          "enabled": true,
-          "src": "https://boktoss2345.github.io/Video-Maker-Studio-Editor-Cut-Merge3655/assets/635574568.mp4",
-          "autoplay": true,
-          "loop": true,
-          "muted": true,
-          "controls": false,
-          "widthPercent": 96,
-          "maxWidthDp": 900,
-          "contentScale": "fit",
-          "cornerRadiusDp": 12,
-          "clickable": true,
-          "url": "amzn://apps/android?initiatePurchaseFlow=true&asin=B0HJRC1J38"
-        },
-        {
-          "type": "button",
-          "enabled": true,
-          "text": "DOWNLOAD CapCut",
-          "backgroundColor": "#FFD400",
-          "textColor": "#000000",
-          "textSizeSp": 20,
-          "bold": true,
-          "widthPercent": 90,
-          "maxWidthDp": 650,
-          "heightDp": 68,
-          "cornerRadiusDp": 16,
-          "marginTopDp": 10,
-          "gravity": "center",
-          "clickable": true,
-          "url": "amzn://apps/android?initiatePurchaseFlow=true&asin=B0HJRC1J38"
-        },
-        {
-          "type": "countdown",
-          "enabled": true,
-          "seconds": 25,
-          "style": "circle",
-          "position": "topRight",
-          "autoCloseAtZero": true
-        }
-      ]
-    },
-
-    {
-      "id": "amazon_image_05",
-      "enabled": true,
-      "elements": [
-        {
-          "type": "image",
-          "enabled": true,
-          "src": "https://boktoss2345.github.io/Video-Maker-Studio-Editor-Cut-Merge3655/assets/44585554.png",
-          "widthPercent": 96,
-          "maxWidthDp": 900,
-          "contentScale": "fit",
-          "cornerRadiusDp": 12,
-          "clickable": true,
-          "url": "amzn://apps/android?initiatePurchaseFlow=true&asin=B0HJRC1J38"
-        },
-        {
-          "type": "button",
-          "enabled": true,
-          "text": "DOWNLOAD CapCut",
-          "backgroundColor": "#FFD400",
-          "textColor": "#000000",
-          "textSizeSp": 20,
-          "bold": true,
-          "widthPercent": 90,
-          "maxWidthDp": 650,
-          "heightDp": 68,
-          "cornerRadiusDp": 16,
-          "marginTopDp": 10,
-          "gravity": "center",
-          "clickable": true,
-          "url": "amzn://apps/android?initiatePurchaseFlow=true&asin=B0HJRC1J38"
         },
         {
           "type": "countdown",
