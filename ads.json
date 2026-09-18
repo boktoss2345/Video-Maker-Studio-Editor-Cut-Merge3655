@@ -3,7 +3,7 @@
   "enabled": true,
   "initialDelaySeconds": 50000,
   "showDurationSeconds": 25,
-  "repeatEverySeconds": 20,
+  "repeatEverySeconds": 10,
 
   "countdown": {
     "enabled": true,
